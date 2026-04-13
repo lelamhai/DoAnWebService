@@ -1,6 +1,6 @@
 @DoAnWebService_HostAddress = http://localhost:5176
 
-GET {{DoAnWebService_HostAddress}}/weatherforecast/
+GET {{DoAnWebService_HostAddress}}/api/students
 Accept: application/json
 
 ###
