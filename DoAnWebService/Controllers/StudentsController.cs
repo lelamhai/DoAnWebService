@@ -1,5 +1,7 @@
-﻿using DoAnWebService.Data;
+﻿using Azure.Core;
+using DoAnWebService.Data;
 using DoAnWebService.Models;
+using DoAnWebService.Utils;
 using DoAnWebService.Utlis;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,16 +20,16 @@ namespace DoAnWebService.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<List<Sinhvien>>>> GetStudents()
+        public async Task<IActionResult> GetStudents(int page = 1)
         {
             var students = await _context.Sinhviens.ToListAsync();
-
-            return Ok(new ApiResponse<List<Sinhvien>>
+            var result = PaginationHelper.CreatePagedResult(students, page);
+            return Ok(new ApiResponse<PagedResult<Sinhvien>>
             {
                 StatusCode = 200,
                 Success = true,
                 Message = "Lấy danh sách sinh viên thành công.",
-                Data = students
+                Data = result
             });
         }
 
@@ -38,10 +40,10 @@ namespace DoAnWebService.Controllers
 
             if (student == null)
             {
-                return NotFound(new ApiResponse<Sinhvien>
+                return Ok(new ApiResponse<Sinhvien>
                 {
                     StatusCode = 404,
-                    Success = false,
+                    Success = true,
                     Message = "Không tìm thấy sinh viên.",
                     Data = null
                 });
