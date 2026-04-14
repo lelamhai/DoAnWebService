@@ -13,7 +13,7 @@ public partial class Hocphi
 
     public int Hocphi1 { get; set; }
 
-    public virtual ICollection<CtDonghocphi> CtDonghocphis { get; set; } = new List<CtDonghocphi>();
+    public virtual ICollection<CTDonghocphi> CtDonghocphis { get; set; } = new List<CTDonghocphi>();
 
     public virtual Sinhvien MasvNavigation { get; set; } = null!;
 }

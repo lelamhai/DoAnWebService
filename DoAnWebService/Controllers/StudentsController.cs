@@ -57,5 +57,55 @@ namespace DoAnWebService.Controllers
                 Data = student
             });
         }
+
+        [HttpDelete("{masv}")]
+        public async Task<IActionResult> DeleteStudent(string masv)
+        {
+            var student = await _context.Sinhviens.FirstOrDefaultAsync(x => x.Masv == masv);
+
+            if (student == null)
+            {
+                return Ok(new ApiResponse<Sinhvien>
+                {
+                    StatusCode = 404,
+                    Success = true,
+                    Message = "Không tìm thấy sinh viên.",
+                    Data = null
+                });
+            }
+
+            if (await _context.Dangkies.AnyAsync(x => x.Masv == masv))
+            {
+                return Ok(new ApiResponse<Sinhvien>
+                {
+                    StatusCode = 404,
+                    Success = true,
+                    Message = "Sinh viên đã đăng ký lớp tín chỉ, không thể xóa.",
+                    Data = null
+                });
+            }
+
+            if (await _context.Hocphis.AnyAsync(x => x.Masv == masv))
+            {
+                return Ok(new ApiResponse<Sinhvien>
+                {
+                    StatusCode = 404,
+                    Success = true,
+                    Message = "Sinh viên đã có học phí, không thể xóa.",
+                    Data = null
+                });
+            }
+
+            _context.Sinhviens.Remove(student);
+            await _context.SaveChangesAsync();
+
+            return Ok(new ApiResponse<Sinhvien>
+            {
+                StatusCode = 200,
+                Success = true,
+                Message = "Xóa sinh viên thành công.",
+                Data = null
+            });
+        }
     }
 }

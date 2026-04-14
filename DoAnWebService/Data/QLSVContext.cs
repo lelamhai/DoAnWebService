@@ -16,7 +16,7 @@ public partial class QLSVContext : DbContext
     {
     }
 
-    public virtual DbSet<CtDonghocphi> CtDonghocphis { get; set; }
+    public virtual DbSet<CTDonghocphi> CtDonghocphis { get; set; }
 
     public virtual DbSet<Dangky> Dangkies { get; set; }
 
@@ -43,7 +43,7 @@ public partial class QLSVContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<CtDonghocphi>(entity =>
+        modelBuilder.Entity<CTDonghocphi>(entity =>
         {
             entity.HasKey(e => new { e.Masv, e.Nienkhoa, e.Hocky, e.Ngaydong }).HasName("PK_CTHOCPHI");
 

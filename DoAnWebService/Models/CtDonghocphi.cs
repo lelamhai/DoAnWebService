@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DoAnWebService.Models;
 
-public partial class CtDonghocphi
+public partial class CTDonghocphi
 {
     public string Masv { get; set; } = null!;
 
