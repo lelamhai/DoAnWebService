@@ -13,7 +13,11 @@ public partial class Lop
 
     public string Makhoa { get; set; } = null!;
 
+    public string Manv { get; set; } = null!;
+
     public virtual Khoa MakhoaNavigation { get; set; } = null!;
+
+    public virtual Nhanvien ManvNavigation { get; set; } = null!;
 
     public virtual ICollection<Sinhvien> Sinhviens { get; set; } = new List<Sinhvien>();
 }

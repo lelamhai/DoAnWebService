@@ -45,7 +45,7 @@ public partial class QLSVContext : DbContext
     {
         modelBuilder.Entity<CtDonghocphi>(entity =>
         {
-            entity.HasKey(e => new { e.Masv, e.Nienkhoa, e.Hocky, e.Ngaydong });
+            entity.HasKey(e => new { e.Masv, e.Nienkhoa, e.Hocky, e.Ngaydong }).HasName("PK_CTHOCPHI");
 
             entity.ToTable("CT_DONGHOCPHI");
 
@@ -58,15 +58,13 @@ public partial class QLSVContext : DbContext
                 .IsFixedLength()
                 .HasColumnName("NIENKHOA");
             entity.Property(e => e.Hocky).HasColumnName("HOCKY");
-            entity.Property(e => e.Ngaydong)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnName("NGAYDONG");
+            entity.Property(e => e.Ngaydong).HasColumnName("NGAYDONG");
             entity.Property(e => e.Sotiendong).HasColumnName("SOTIENDONG");
 
             entity.HasOne(d => d.Hocphi).WithMany(p => p.CtDonghocphis)
                 .HasForeignKey(d => new { d.Masv, d.Nienkhoa, d.Hocky })
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_CT_DONGHOCPHI_HOCPHI");
+                .HasConstraintName("FK_CTDONGHOCPHI_HOCPHI");
         });
 
         modelBuilder.Entity<Dangky>(entity =>
@@ -75,17 +73,21 @@ public partial class QLSVContext : DbContext
 
             entity.ToTable("DANGKY");
 
-            entity.HasIndex(e => new { e.Maltc, e.Masv }, "UK_DANGKY").IsUnique();
-
             entity.Property(e => e.Maltc).HasColumnName("MALTC");
             entity.Property(e => e.Masv)
                 .HasMaxLength(10)
                 .IsFixedLength()
                 .HasColumnName("MASV");
+            entity.Property(e => e.Dangky1)
+                .HasDefaultValue(true)
+                .HasColumnName("DANGKY");
             entity.Property(e => e.DiemCc).HasColumnName("DIEM_CC");
             entity.Property(e => e.DiemCk).HasColumnName("DIEM_CK");
             entity.Property(e => e.DiemGk).HasColumnName("DIEM_GK");
-            entity.Property(e => e.Huydangky).HasColumnName("HUYDANGKY");
+            entity.Property(e => e.Xeploai)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasColumnName("XEPLOAI");
 
             entity.HasOne(d => d.MaltcNavigation).WithMany(p => p.Dangkies)
                 .HasForeignKey(d => d.Maltc)
@@ -95,12 +97,12 @@ public partial class QLSVContext : DbContext
             entity.HasOne(d => d.MasvNavigation).WithMany(p => p.Dangkies)
                 .HasForeignKey(d => d.Masv)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_CTLTC_SINHVIEN");
+                .HasConstraintName("FK_DANGKY_SINHVIEN");
         });
 
         modelBuilder.Entity<Giangvien>(entity =>
         {
-            entity.HasKey(e => e.Magv);
+            entity.HasKey(e => e.Magv).HasName("PK__GIANGVIE__603F38B14A95DB0A");
 
             entity.ToTable("GIANGVIEN");
 
@@ -111,6 +113,13 @@ public partial class QLSVContext : DbContext
             entity.Property(e => e.Chuyenmon)
                 .HasMaxLength(50)
                 .HasColumnName("CHUYENMON");
+            entity.Property(e => e.Dangday)
+                .HasDefaultValue(true)
+                .HasColumnName("DANGDAY");
+            entity.Property(e => e.Email)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("EMAIL");
             entity.Property(e => e.Ho)
                 .HasMaxLength(50)
                 .HasColumnName("HO");
@@ -124,6 +133,9 @@ public partial class QLSVContext : DbContext
                 .HasMaxLength(10)
                 .IsFixedLength()
                 .HasColumnName("MAKHOA");
+            entity.Property(e => e.Password)
+                .HasMaxLength(40)
+                .HasColumnName("PASSWORD");
             entity.Property(e => e.Ten)
                 .HasMaxLength(10)
                 .HasColumnName("TEN");
@@ -148,12 +160,8 @@ public partial class QLSVContext : DbContext
                 .HasMaxLength(9)
                 .IsFixedLength()
                 .HasColumnName("NIENKHOA");
-            entity.Property(e => e.Hocky)
-                .HasDefaultValue(1)
-                .HasColumnName("HOCKY");
-            entity.Property(e => e.Hocphi1)
-                .HasDefaultValue(6000000)
-                .HasColumnName("HOCPHI");
+            entity.Property(e => e.Hocky).HasColumnName("HOCKY");
+            entity.Property(e => e.Hocphi1).HasColumnName("HOCPHI");
 
             entity.HasOne(d => d.MasvNavigation).WithMany(p => p.Hocphis)
                 .HasForeignKey(d => d.Masv)
@@ -163,7 +171,7 @@ public partial class QLSVContext : DbContext
 
         modelBuilder.Entity<Khoa>(entity =>
         {
-            entity.HasKey(e => e.Makhoa);
+            entity.HasKey(e => e.Makhoa).HasName("PK__KHOA__22F41770FF26D713");
 
             entity.ToTable("KHOA");
 
@@ -178,11 +186,9 @@ public partial class QLSVContext : DbContext
 
         modelBuilder.Entity<Loainhanvien>(entity =>
         {
-            entity.HasKey(e => e.MaLoaiNv).HasName("PK__LOAINHAN__12252308EB15231F");
+            entity.HasKey(e => e.MaLoaiNv).HasName("PK__LOAINHAN__12252308C1F03CED");
 
             entity.ToTable("LOAINHANVIEN");
-
-            entity.HasIndex(e => e.TenLoaiNv, "UQ__LOAINHAN__F43523D197BA8297").IsUnique();
 
             entity.Property(e => e.MaLoaiNv).HasColumnName("MaLoaiNV");
             entity.Property(e => e.TenLoaiNv)
@@ -192,7 +198,7 @@ public partial class QLSVContext : DbContext
 
         modelBuilder.Entity<Lop>(entity =>
         {
-            entity.HasKey(e => e.Malop);
+            entity.HasKey(e => e.Malop).HasName("PK__LOP__7A3DE211FB443291");
 
             entity.ToTable("LOP");
 
@@ -208,6 +214,10 @@ public partial class QLSVContext : DbContext
                 .HasMaxLength(10)
                 .IsFixedLength()
                 .HasColumnName("MAKHOA");
+            entity.Property(e => e.Manv)
+                .HasMaxLength(10)
+                .IsFixedLength()
+                .HasColumnName("MANV");
             entity.Property(e => e.Tenlop)
                 .HasMaxLength(50)
                 .HasColumnName("TENLOP");
@@ -216,27 +226,30 @@ public partial class QLSVContext : DbContext
                 .HasForeignKey(d => d.Makhoa)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_LOP_KHOA");
+
+            entity.HasOne(d => d.ManvNavigation).WithMany(p => p.Lops)
+                .HasForeignKey(d => d.Manv)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_LOP_NHANVIEN");
         });
 
         modelBuilder.Entity<Loptinchi>(entity =>
         {
-            entity.HasKey(e => e.Maltc);
+            entity.HasKey(e => e.Maltc).HasName("PK__LOPTINCH__7A3D3BC689E5770B");
 
             entity.ToTable("LOPTINCHI");
 
-            entity.HasIndex(e => new { e.Nienkhoa, e.Hocky, e.Mamh, e.Nhom }, "UK_LOPTINCHI").IsUnique();
-
             entity.Property(e => e.Maltc).HasColumnName("MALTC");
+            entity.Property(e => e.DayThutrongtuan)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("DAY_THUTRONGTUAN");
             entity.Property(e => e.Hocky).HasColumnName("HOCKY");
             entity.Property(e => e.Huylop).HasColumnName("HUYLOP");
             entity.Property(e => e.Magv)
                 .HasMaxLength(10)
                 .IsFixedLength()
                 .HasColumnName("MAGV");
-            entity.Property(e => e.Makhoa)
-                .HasMaxLength(10)
-                .IsFixedLength()
-                .HasColumnName("MAKHOA");
             entity.Property(e => e.Mamh)
                 .HasMaxLength(10)
                 .IsFixedLength()
@@ -246,17 +259,15 @@ public partial class QLSVContext : DbContext
                 .HasMaxLength(9)
                 .IsFixedLength()
                 .HasColumnName("NIENKHOA");
-            entity.Property(e => e.Sosvtoithieu).HasColumnName("SOSVTOITHIEU");
+            entity.Property(e => e.SisoHientai).HasColumnName("SISO_HIENTAI");
+            entity.Property(e => e.SisoToida).HasColumnName("SISO_TOIDA");
+            entity.Property(e => e.ThoigianBatdau).HasColumnName("THOIGIAN_BATDAU");
+            entity.Property(e => e.ThoigianKetthuc).HasColumnName("THOIGIAN_KETTHUC");
 
             entity.HasOne(d => d.MagvNavigation).WithMany(p => p.Loptinchis)
                 .HasForeignKey(d => d.Magv)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_LOPTINCHI_GIANGVIEN");
-
-            entity.HasOne(d => d.MakhoaNavigation).WithMany(p => p.Loptinchis)
-                .HasForeignKey(d => d.Makhoa)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_LOPTINCHI_KHOA");
 
             entity.HasOne(d => d.MamhNavigation).WithMany(p => p.Loptinchis)
                 .HasForeignKey(d => d.Mamh)
@@ -266,7 +277,7 @@ public partial class QLSVContext : DbContext
 
         modelBuilder.Entity<Monhoc>(entity =>
         {
-            entity.HasKey(e => e.Mamh);
+            entity.HasKey(e => e.Mamh).HasName("PK__MONHOC__603F69EBB078544E");
 
             entity.ToTable("MONHOC");
 
@@ -274,29 +285,43 @@ public partial class QLSVContext : DbContext
                 .HasMaxLength(10)
                 .IsFixedLength()
                 .HasColumnName("MAMH");
+            entity.Property(e => e.Makhoa)
+                .HasMaxLength(10)
+                .IsFixedLength()
+                .HasColumnName("MAKHOA");
             entity.Property(e => e.SotietLt).HasColumnName("SOTIET_LT");
             entity.Property(e => e.SotietTh).HasColumnName("SOTIET_TH");
+            entity.Property(e => e.Sotinchi).HasColumnName("SOTINCHI");
             entity.Property(e => e.Tenmh)
                 .HasMaxLength(50)
                 .HasColumnName("TENMH");
+
+            entity.HasOne(d => d.MakhoaNavigation).WithMany(p => p.Monhocs)
+                .HasForeignKey(d => d.Makhoa)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_MONHOC_KHOA");
         });
 
         modelBuilder.Entity<Nhanvien>(entity =>
         {
-            entity.HasKey(e => e.Manv).HasName("PK__NHANVIEN__603F5114DE9F3E83");
+            entity.HasKey(e => e.Manv).HasName("PK__NHANVIEN__603F5114B3A8F429");
 
             entity.ToTable("NHANVIEN");
+
+            entity.HasIndex(e => e.Email, "UQ__NHANVIEN__161CF724FFBE3875").IsUnique();
 
             entity.Property(e => e.Manv)
                 .HasMaxLength(10)
                 .IsFixedLength()
                 .HasColumnName("MANV");
-            entity.Property(e => e.Danglam)
-                .HasDefaultValue(true)
-                .HasColumnName("DANGLAM");
+            entity.Property(e => e.Danglam).HasColumnName("DANGLAM");
             entity.Property(e => e.Diachi)
                 .HasMaxLength(100)
                 .HasColumnName("DIACHI");
+            entity.Property(e => e.Email)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("EMAIL");
             entity.Property(e => e.Ho)
                 .HasMaxLength(50)
                 .HasColumnName("HO");
@@ -304,7 +329,6 @@ public partial class QLSVContext : DbContext
             entity.Property(e => e.Ngaysinh).HasColumnName("NGAYSINH");
             entity.Property(e => e.Password)
                 .HasMaxLength(40)
-                .HasDefaultValue("")
                 .HasColumnName("PASSWORD");
             entity.Property(e => e.Phai)
                 .HasDefaultValue(true)
@@ -321,20 +345,24 @@ public partial class QLSVContext : DbContext
 
         modelBuilder.Entity<Sinhvien>(entity =>
         {
-            entity.HasKey(e => e.Masv);
+            entity.HasKey(e => e.Masv).HasName("PK__SINHVIEN__60228A28970C3473");
 
             entity.ToTable("SINHVIEN");
-
-            entity.HasIndex(e => e.Malop, "IX_MALOP");
 
             entity.Property(e => e.Masv)
                 .HasMaxLength(10)
                 .IsFixedLength()
                 .HasColumnName("MASV");
-            entity.Property(e => e.Danghihoc).HasColumnName("DANGHIHOC");
+            entity.Property(e => e.Danghoc)
+                .HasDefaultValue(true)
+                .HasColumnName("DANGHOC");
             entity.Property(e => e.Diachi)
                 .HasMaxLength(100)
                 .HasColumnName("DIACHI");
+            entity.Property(e => e.Email)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("EMAIL");
             entity.Property(e => e.Ho)
                 .HasMaxLength(50)
                 .HasColumnName("HO");
@@ -345,9 +373,10 @@ public partial class QLSVContext : DbContext
             entity.Property(e => e.Ngaysinh).HasColumnName("NGAYSINH");
             entity.Property(e => e.Password)
                 .HasMaxLength(40)
-                .HasDefaultValue("")
                 .HasColumnName("PASSWORD");
-            entity.Property(e => e.Phai).HasColumnName("PHAI");
+            entity.Property(e => e.Phai)
+                .HasDefaultValue(true)
+                .HasColumnName("PHAI");
             entity.Property(e => e.Ten)
                 .HasMaxLength(10)
                 .HasColumnName("TEN");

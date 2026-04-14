@@ -15,7 +15,9 @@ public partial class Dangky
 
     public double? DiemCk { get; set; }
 
-    public bool? Huydangky { get; set; }
+    public string? Xeploai { get; set; }
+
+    public bool? Dangky1 { get; set; }
 
     public virtual Loptinchi MaltcNavigation { get; set; } = null!;
 

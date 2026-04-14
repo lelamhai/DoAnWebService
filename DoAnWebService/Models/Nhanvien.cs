@@ -17,11 +17,15 @@ public partial class Nhanvien
 
     public DateOnly? Ngaysinh { get; set; }
 
+    public string? Email { get; set; }
+
     public bool Danglam { get; set; }
+
+    public string? Password { get; set; }
 
     public int MaLoaiNv { get; set; }
 
-    public string? Password { get; set; }
+    public virtual ICollection<Lop> Lops { get; set; } = new List<Lop>();
 
     public virtual Loainhanvien MaLoaiNvNavigation { get; set; } = null!;
 }

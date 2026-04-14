@@ -13,5 +13,5 @@ public partial class Khoa
 
     public virtual ICollection<Lop> Lops { get; set; } = new List<Lop>();
 
-    public virtual ICollection<Loptinchi> Loptinchis { get; set; } = new List<Loptinchi>();
+    public virtual ICollection<Monhoc> Monhocs { get; set; } = new List<Monhoc>();
 }

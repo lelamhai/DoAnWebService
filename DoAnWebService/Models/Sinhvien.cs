@@ -18,11 +18,14 @@ public partial class Sinhvien
 
     public DateOnly? Ngaysinh { get; set; }
 
+    public string? Email { get; set; }
+
     public string Malop { get; set; } = null!;
 
-    public bool Danghihoc { get; set; }
+    public bool Danghoc { get; set; }
 
     public string? Password { get; set; }
+
     [JsonIgnore]
     public virtual ICollection<Dangky> Dangkies { get; set; } = new List<Dangky>();
     [JsonIgnore]
