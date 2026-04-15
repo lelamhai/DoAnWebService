@@ -10,11 +10,11 @@ namespace DoAnWebService.Controllers
 {
     [Route("api/v1/private/[controller]")]
     [ApiController]
-    public class StudentsController : ControllerBase
+    public class StudentController : ControllerBase
     {
         private readonly QLSVContext _context;
 
-        public StudentsController(QLSVContext context)
+        public StudentController(QLSVContext context)
         {
             _context = context;
         }
@@ -23,7 +23,7 @@ namespace DoAnWebService.Controllers
         public async Task<IActionResult> GetStudents(int page = 1)
         {
             var students = await _context.Sinhviens.ToListAsync();
-            var result = PaginationHelper.CreatePagedResult(students, page);
+            var result = PaginationHelper.CreatePagedResult(students, page, 3);
             return Ok(new ApiResponse<PagedResult<Sinhvien>>
             {
                 Message = "Lấy danh sách sinh viên thành công.",
@@ -40,14 +40,14 @@ namespace DoAnWebService.Controllers
             {
                 return NotFound(new ApiResponse<Sinhvien>
                 {
-                    Message = "Không tìm thấy sinh viên.",
+                    Message = $"Không tìm thấy sinh viên {masv}.",
                     Data = null
                 });
             }
 
             return Ok(new ApiResponse<Sinhvien>
             {
-                Message = "Tìm sinh viên thành công",
+                Message = $"Tìm sinh viên {masv} thành công",
                 Data = student
             });
         }

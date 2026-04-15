@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace DoAnWebService.Models;
+﻿namespace DoAnWebService.Models;
 
 public partial class Giangvien
 {

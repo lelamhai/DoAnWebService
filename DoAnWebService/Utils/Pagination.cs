@@ -23,16 +23,13 @@ namespace DoAnWebService.Utils
 
     public static class PaginationHelper
     {
-        static int defaultPageSize = 2;
         public static PagedResult<T> CreatePagedResult<T>(
             List<T> source,
             int page,
-            int pageSize=10)
+            int pageSize)
         {
-            int defaultPageSize = 2;
-            pageSize = defaultPageSize;
             if (page <= 0) page = 1;
-            if (pageSize <= 0) pageSize = defaultPageSize;
+            if (pageSize <= 0) pageSize = 10;
 
             var totalCount = source.Count;
             var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
