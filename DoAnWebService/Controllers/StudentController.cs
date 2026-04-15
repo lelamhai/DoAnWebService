@@ -95,7 +95,7 @@ namespace DoAnWebService.Controllers
         }
 
         [HttpPut("update-student/{masv}")]
-        public async Task<IActionResult> UpdateStudent(string masv, UpdateSinhvienDTO sinhvienDTO)
+        public async Task<IActionResult> UpdateStudent(string masv, UpdateStudentDTO sinhvienDTO)
         {
             var student = await _context.Sinhviens.FirstOrDefaultAsync(x => x.Masv == masv);
             if (student == null)
@@ -127,7 +127,7 @@ namespace DoAnWebService.Controllers
         }
 
         [HttpPost("create-student")]
-        public async Task<IActionResult> CreateStudent(CreateSinhvienDTO sinhvienDTO)
+        public async Task<IActionResult> CreateStudent(CreateStudentDTO sinhvienDTO)
         {
             var newStudent = new Sinhvien
             {

@@ -1,6 +1,6 @@
 ﻿namespace DoAnWebService.DTO.Sinhvien
 {
-    public class UpdateSinhvienDTO: BaseSinhvienDTO
+    public class UpdateStudentDTO: BaseStudentDTO
     {
     }
 }

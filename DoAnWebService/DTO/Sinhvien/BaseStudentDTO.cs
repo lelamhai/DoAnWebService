@@ -1,6 +1,6 @@
 ﻿namespace DoAnWebService.DTO.Sinhvien
 {
-    public class BaseSinhvienDTO
+    public class BaseStudentDTO
     {
         public string Masv { get; set; } = null!;
         public string Ho { get; set; } = null!;
