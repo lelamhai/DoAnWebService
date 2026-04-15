@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DoAnWebService.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/private/[controller]")]
     [ApiController]
     public class StudentsController : ControllerBase
     {
@@ -19,7 +19,7 @@ namespace DoAnWebService.Controllers
             _context = context;
         }
 
-        [HttpGet]
+        [HttpGet("get-students")]
         public async Task<IActionResult> GetStudents(int page = 1)
         {
             var students = await _context.Sinhviens.ToListAsync();
@@ -31,7 +31,7 @@ namespace DoAnWebService.Controllers
             });
         }
 
-        [HttpGet("{masv}")]
+        [HttpGet("detail-student/{masv}")]
         public async Task<ActionResult<Sinhvien>> GetStudentByMaSV(string masv)
         {
             var student = await _context.Sinhviens.FirstOrDefaultAsync(sv => sv.Masv == masv);
@@ -52,7 +52,7 @@ namespace DoAnWebService.Controllers
             });
         }
 
-        [HttpDelete("{masv}")]
+        [HttpDelete("delete-student/{masv}")]
         public async Task<IActionResult> DeleteStudent(string masv)
         {
             var student = await _context.Sinhviens.FirstOrDefaultAsync(x => x.Masv == masv);
@@ -94,7 +94,7 @@ namespace DoAnWebService.Controllers
             });
         }
 
-        [HttpPut("{masv}")]
+        [HttpPut("update-student/{masv}")]
         public async Task<IActionResult> UpdateStudent(string masv, UpdateSinhvienDTO sinhvienDTO)
         {
             var student = await _context.Sinhviens.FirstOrDefaultAsync(x => x.Masv == masv);
@@ -126,7 +126,7 @@ namespace DoAnWebService.Controllers
             });
         }
 
-        [HttpPost]
+        [HttpPost("create-student")]
         public async Task<IActionResult> CreateStudent(CreateSinhvienDTO sinhvienDTO)
         {
             var newStudent = new Sinhvien
