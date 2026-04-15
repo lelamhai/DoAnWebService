@@ -1,5 +1,5 @@
-﻿using Azure.Core;
-using DoAnWebService.Data;
+﻿using DoAnWebService.Data;
+using DoAnWebService.DTO.Sinhvien;
 using DoAnWebService.Models;
 using DoAnWebService.Utils;
 using DoAnWebService.Utlis;
@@ -26,8 +26,6 @@ namespace DoAnWebService.Controllers
             var result = PaginationHelper.CreatePagedResult(students, page);
             return Ok(new ApiResponse<PagedResult<Sinhvien>>
             {
-                StatusCode = 200,
-                Success = true,
                 Message = "Lấy danh sách sinh viên thành công.",
                 Data = result
             });
@@ -40,10 +38,8 @@ namespace DoAnWebService.Controllers
 
             if (student == null)
             {
-                return Ok(new ApiResponse<Sinhvien>
+                return NotFound(new ApiResponse<Sinhvien>
                 {
-                    StatusCode = 404,
-                    Success = true,
                     Message = "Không tìm thấy sinh viên.",
                     Data = null
                 });
@@ -51,8 +47,6 @@ namespace DoAnWebService.Controllers
 
             return Ok(new ApiResponse<Sinhvien>
             {
-                StatusCode = 200,
-                Success = true,
                 Message = "Tìm sinh viên thành công",
                 Data = student
             });
@@ -65,11 +59,9 @@ namespace DoAnWebService.Controllers
 
             if (student == null)
             {
-                return Ok(new ApiResponse<Sinhvien>
+                return NotFound(new ApiResponse<Sinhvien>
                 {
-                    StatusCode = 404,
-                    Success = true,
-                    Message = "Không tìm thấy sinh viên.",
+                    Message = $"Không tìm thấy sinh viên {masv}.",
                     Data = null
                 });
             }
@@ -78,9 +70,7 @@ namespace DoAnWebService.Controllers
             {
                 return Ok(new ApiResponse<Sinhvien>
                 {
-                    StatusCode = 404,
-                    Success = true,
-                    Message = "Sinh viên đã đăng ký lớp tín chỉ, không thể xóa.",
+                    Message = $"Sinh viên {masv} đã đăng ký lớp tín chỉ, không thể xóa.",
                     Data = null
                 });
             }
@@ -89,9 +79,7 @@ namespace DoAnWebService.Controllers
             {
                 return Ok(new ApiResponse<Sinhvien>
                 {
-                    StatusCode = 404,
-                    Success = true,
-                    Message = "Sinh viên đã có học phí, không thể xóa.",
+                    Message = $"Sinh viên {masv} đã có học phí, không thể xóa.",
                     Data = null
                 });
             }
@@ -101,10 +89,65 @@ namespace DoAnWebService.Controllers
 
             return Ok(new ApiResponse<Sinhvien>
             {
-                StatusCode = 200,
-                Success = true,
-                Message = "Xóa sinh viên thành công.",
+                Message = $"Xóa sinh viên {masv} thành công.",
                 Data = null
+            });
+        }
+
+        [HttpPut("{masv}")]
+        public async Task<IActionResult> UpdateStudent(string masv, UpdateSinhvienDTO sinhvienDTO)
+        {
+            var student = await _context.Sinhviens.FirstOrDefaultAsync(x => x.Masv == masv);
+            if (student == null)
+            {
+                return Ok(new ApiResponse<Sinhvien>
+                {
+                    Message = $"Không tìm thấy sinh viên {masv}.",
+                    Data = null
+                });
+            }
+
+            student.Masv = masv;
+            student.Malop = sinhvienDTO.Malop;
+            student.Ho = sinhvienDTO.Ho;
+            student.Ten = sinhvienDTO.Ten;
+            student.Phai = sinhvienDTO.Phai;
+            student.Diachi = sinhvienDTO.Diachi;
+            student.Ngaysinh = sinhvienDTO.Ngaysinh;
+            student.Email = sinhvienDTO.Email;
+            student.Password = sinhvienDTO.Password;
+            student.Danghoc = sinhvienDTO.Danghoc;
+
+            await _context.SaveChangesAsync();
+            return Ok(new ApiResponse<Sinhvien>
+            {
+                Message = $"Cập nhật thông tin sinh viên {masv} thành công.",
+                Data = null
+            });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateStudent(CreateSinhvienDTO sinhvienDTO)
+        {
+            var newStudent = new Sinhvien
+            {
+                Masv = sinhvienDTO.Masv,
+                Malop = sinhvienDTO.Malop,
+                Ho = sinhvienDTO.Ho,
+                Ten = sinhvienDTO.Ten,
+                Phai = sinhvienDTO.Phai,
+                Diachi = sinhvienDTO.Diachi,
+                Ngaysinh = sinhvienDTO.Ngaysinh,
+                Email = sinhvienDTO.Email,
+                Password = sinhvienDTO.Password,
+                Danghoc = sinhvienDTO.Danghoc
+            };
+            _context.Sinhviens.Add(newStudent);
+            await _context.SaveChangesAsync();
+            return Ok(new ApiResponse<Sinhvien>
+            {
+                Message = $"Tạo mới sinh viên {sinhvienDTO.Masv} thành công.",
+                Data = newStudent
             });
         }
     }
