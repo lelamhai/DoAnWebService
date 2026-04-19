@@ -122,7 +122,7 @@ namespace DoAnWebService.Controllers
             return Ok(new ApiResponse<Sinhvien>
             {
                 Message = $"Cập nhật thông tin sinh viên {masv} thành công.",
-                Data = null
+                Data = student
             });
         }
 

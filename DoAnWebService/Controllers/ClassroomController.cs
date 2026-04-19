@@ -108,7 +108,7 @@ namespace DoAnWebService.Controllers
             return Ok(new ApiResponse<Lop>
             {
                 Message = $"Cập nhật thông tin lớp {malop} thành công.",
-                Data = null
+                Data = classroom
             });
         }
 
