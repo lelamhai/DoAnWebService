@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DoAnWebService.Models;
 
@@ -21,8 +23,6 @@ public partial class Sinhvien
     public string Malop { get; set; } = null!;
 
     public bool Danghoc { get; set; }
-
-    public string? Password { get; set; }
 
     [JsonIgnore]
     public virtual ICollection<Dangky> Dangkies { get; set; } = new List<Dangky>();

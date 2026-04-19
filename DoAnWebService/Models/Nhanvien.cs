@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DoAnWebService.Models;
 
@@ -23,8 +24,10 @@ public partial class Nhanvien
     public string? Password { get; set; }
 
     public int MaLoaiNv { get; set; }
-    [JsonIgnore]
+
+    public int UserId { get; set; }
+
     public virtual ICollection<Lop> Lops { get; set; } = new List<Lop>();
-    [JsonIgnore]
+
     public virtual Loainhanvien MaLoaiNvNavigation { get; set; } = null!;
 }

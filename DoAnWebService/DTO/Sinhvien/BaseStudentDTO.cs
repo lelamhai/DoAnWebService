@@ -18,7 +18,5 @@
         public string Malop { get; set; } = null!;
 
         public bool Danghoc { get; set; }
-
-        public string? Password { get; set; }
     }
 }

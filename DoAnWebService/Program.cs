@@ -1,4 +1,3 @@
-//using DoAnWebService.Data;
 using DoAnWebService.Data;
 using Microsoft.EntityFrameworkCore;
 

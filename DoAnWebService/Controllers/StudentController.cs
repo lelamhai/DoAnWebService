@@ -115,7 +115,6 @@ namespace DoAnWebService.Controllers
             student.Diachi = sinhvienDTO.Diachi;
             student.Ngaysinh = sinhvienDTO.Ngaysinh;
             student.Email = sinhvienDTO.Email;
-            student.Password = sinhvienDTO.Password;
             student.Danghoc = sinhvienDTO.Danghoc;
 
             await _context.SaveChangesAsync();
@@ -139,7 +138,6 @@ namespace DoAnWebService.Controllers
                 Diachi = sinhvienDTO.Diachi,
                 Ngaysinh = sinhvienDTO.Ngaysinh,
                 Email = sinhvienDTO.Email,
-                Password = sinhvienDTO.Password,
                 Danghoc = sinhvienDTO.Danghoc
             };
             _context.Sinhviens.Add(newStudent);

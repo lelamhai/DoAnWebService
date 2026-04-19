@@ -1,4 +1,7 @@
-﻿namespace DoAnWebService.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace DoAnWebService.Models;
 
 public partial class Dangky
 {

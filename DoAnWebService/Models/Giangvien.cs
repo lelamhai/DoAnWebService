@@ -1,4 +1,7 @@
-﻿namespace DoAnWebService.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace DoAnWebService.Models;
 
 public partial class Giangvien
 {
@@ -19,8 +22,6 @@ public partial class Giangvien
     public string? Email { get; set; }
 
     public bool Dangday { get; set; }
-
-    public string? Password { get; set; }
 
     public virtual ICollection<Loptinchi> Loptinchis { get; set; } = new List<Loptinchi>();
 
