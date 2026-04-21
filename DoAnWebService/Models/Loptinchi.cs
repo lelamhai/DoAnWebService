@@ -13,8 +13,6 @@ public partial class Loptinchi
 
     public string Mamh { get; set; } = null!;
 
-    public int Nhom { get; set; }
-
     public string Magv { get; set; } = null!;
 
     public int SisoToida { get; set; }

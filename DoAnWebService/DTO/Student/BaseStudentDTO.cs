@@ -2,7 +2,6 @@
 {
     public class BaseStudentDTO
     {
-        public string Masv { get; set; } = null!;
         public string Ho { get; set; } = null!;
 
         public string Ten { get; set; } = null!;
@@ -10,6 +9,8 @@
         public bool Phai { get; set; }
 
         public string? Diachi { get; set; }
+
+        public string? Sodienthoai { get; set; }
 
         public DateOnly? Ngaysinh { get; set; }
 

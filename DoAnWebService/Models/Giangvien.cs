@@ -13,13 +13,21 @@ public partial class Giangvien
 
     public string Ten { get; set; } = null!;
 
+    public bool Phai { get; set; }
+
+    public string? Diachi { get; set; }
+
+    public string? Sodienthoai { get; set; }
+
+    public DateOnly? Ngaysinh { get; set; }
+
+    public string? Email { get; set; }
+
     public string? Hocvi { get; set; }
 
     public string? Hocham { get; set; }
 
     public string? Chuyenmon { get; set; }
-
-    public string? Email { get; set; }
 
     public bool Dangday { get; set; }
 

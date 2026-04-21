@@ -104,6 +104,7 @@ namespace DoAnWebService.Controllers
             classroom.Makhoa=classroomDTO.Makhoa;
             classroom.Manv=classroomDTO.Manv;
 
+
             await _context.SaveChangesAsync();
             return Ok(new ApiResponse<Lop>
             {

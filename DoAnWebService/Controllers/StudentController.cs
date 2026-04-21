@@ -113,6 +113,7 @@ namespace DoAnWebService.Controllers
             student.Ten = sinhvienDTO.Ten;
             student.Phai = sinhvienDTO.Phai;
             student.Diachi = sinhvienDTO.Diachi;
+            student.Sodienthoai = sinhvienDTO.Sodienthoai;
             student.Ngaysinh = sinhvienDTO.Ngaysinh;
             student.Email = sinhvienDTO.Email;
             student.Danghoc = sinhvienDTO.Danghoc;
@@ -136,6 +137,7 @@ namespace DoAnWebService.Controllers
                 Ten = sinhvienDTO.Ten,
                 Phai = sinhvienDTO.Phai,
                 Diachi = sinhvienDTO.Diachi,
+                Sodienthoai = sinhvienDTO.Sodienthoai,
                 Ngaysinh = sinhvienDTO.Ngaysinh,
                 Email = sinhvienDTO.Email,
                 Danghoc = sinhvienDTO.Danghoc

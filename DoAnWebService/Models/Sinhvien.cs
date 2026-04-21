@@ -16,6 +16,8 @@ public partial class Sinhvien
 
     public string? Diachi { get; set; }
 
+    public string? Sodienthoai { get; set; }
+
     public DateOnly? Ngaysinh { get; set; }
 
     public string? Email { get; set; }
@@ -23,7 +25,6 @@ public partial class Sinhvien
     public string Malop { get; set; } = null!;
 
     public bool Danghoc { get; set; }
-
     [JsonIgnore]
     public virtual ICollection<Dangky> Dangkies { get; set; } = new List<Dangky>();
     [JsonIgnore]
