@@ -1,10 +1,7 @@
 ﻿using DoAnWebService.Data;
-using DoAnWebService.DTO.Sinhvien;
 using DoAnWebService.DTO.User;
 using DoAnWebService.Models;
 using DoAnWebService.Utlis;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -58,7 +55,5 @@ namespace DoAnWebService.Controllers
                 Data = user
             });
         }
-
-
     }
 }

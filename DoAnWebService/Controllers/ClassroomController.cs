@@ -1,6 +1,5 @@
 ﻿using DoAnWebService.Data;
 using DoAnWebService.DTO.Lop;
-using DoAnWebService.DTO.Sinhvien;
 using DoAnWebService.Models;
 using DoAnWebService.Utils;
 using DoAnWebService.Utlis;
@@ -69,7 +68,7 @@ namespace DoAnWebService.Controllers
 
             if (await _context.Sinhviens.AnyAsync(x => x.Malop == malop))
             {
-                return Ok(new ApiResponse<Sinhvien>
+                return NotFound(new ApiResponse<Sinhvien>
                 {
                     Message = $"Lớp {malop} đã có sinh viên đăng ký, không thể xóa.",
                     Data = null
@@ -80,7 +79,7 @@ namespace DoAnWebService.Controllers
             _context.Lops.Remove(classroom);
             await _context.SaveChangesAsync();
 
-            return Ok(new ApiResponse<Sinhvien>
+            return Ok(new ApiResponse<Lop>
             {
                 Message = $"Xóa lớp {malop} thành công.",
                 Data = null

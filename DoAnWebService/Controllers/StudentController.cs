@@ -68,7 +68,7 @@ namespace DoAnWebService.Controllers
 
             if (await _context.Dangkies.AnyAsync(x => x.Masv == masv))
             {
-                return Ok(new ApiResponse<Sinhvien>
+                return NotFound(new ApiResponse<Sinhvien>
                 {
                     Message = $"Sinh viên {masv} đã đăng ký lớp tín chỉ, không thể xóa.",
                     Data = null
@@ -77,7 +77,7 @@ namespace DoAnWebService.Controllers
 
             if (await _context.Hocphis.AnyAsync(x => x.Masv == masv))
             {
-                return Ok(new ApiResponse<Sinhvien>
+                return NotFound(new ApiResponse<Sinhvien>
                 {
                     Message = $"Sinh viên {masv} đã có học phí, không thể xóa.",
                     Data = null
