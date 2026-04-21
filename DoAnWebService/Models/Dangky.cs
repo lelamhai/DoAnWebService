@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DoAnWebService.Models;
 
@@ -17,9 +18,9 @@ public partial class Dangky
 
     public string? Xeploai { get; set; }
 
-    public bool? Dangky1 { get; set; }
-
+    public bool? Huydangky { get; set; }
+    [JsonIgnore]
     public virtual Loptinchi MaltcNavigation { get; set; } = null!;
-
+    [JsonIgnore]
     public virtual Sinhvien MasvNavigation { get; set; } = null!;
 }
