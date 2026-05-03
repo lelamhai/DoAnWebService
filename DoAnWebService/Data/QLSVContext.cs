@@ -16,13 +16,15 @@ public partial class QLSVContext : DbContext
     {
     }
 
+    public virtual DbSet<Account> Accounts { get; set; }
+
     public virtual DbSet<CTDonghocphi> CtDonghocphis { get; set; }
 
     public virtual DbSet<Dangky> Dangkies { get; set; }
 
-    public virtual DbSet<Giangvien> Giangviens { get; set; }
+    public virtual DbSet<Donghocphi> Donghocphis { get; set; }
 
-    public virtual DbSet<Hocphi> Hocphis { get; set; }
+    public virtual DbSet<Giangvien> Giangviens { get; set; }
 
     public virtual DbSet<Khoa> Khoas { get; set; }
 
@@ -36,17 +38,41 @@ public partial class QLSVContext : DbContext
 
     public virtual DbSet<Nhanvien> Nhanviens { get; set; }
 
-    public virtual DbSet<Role> Roles { get; set; }
-
     public virtual DbSet<Sinhvien> Sinhviens { get; set; }
 
-    public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<Token> Tokens { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:DefaultConnection");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Account>(entity =>
+        {
+            entity.HasKey(e => e.AccountId).HasName("PK__ACCOUNT__05B22F6024D803B8");
+
+            entity.ToTable("ACCOUNT");
+
+            entity.HasIndex(e => e.Username, "UQ__ACCOUNT__B15BE12E3CE8049B").IsUnique();
+
+            entity.Property(e => e.AccountId).HasColumnName("ACCOUNT_ID");
+            entity.Property(e => e.Active)
+                .HasDefaultValue(true)
+                .HasColumnName("ACTIVE");
+            entity.Property(e => e.Password)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("PASSWORD");
+            entity.Property(e => e.Role)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("ROLE");
+            entity.Property(e => e.Username)
+                .HasMaxLength(15)
+                .IsUnicode(false)
+                .HasColumnName("USERNAME");
+        });
+
         modelBuilder.Entity<CTDonghocphi>(entity =>
         {
             entity.HasKey(e => new { e.Masv, e.Nienkhoa, e.Hocky, e.Ngaydong }).HasName("PK_CTHOCPHI");
@@ -65,7 +91,7 @@ public partial class QLSVContext : DbContext
             entity.Property(e => e.Ngaydong).HasColumnName("NGAYDONG");
             entity.Property(e => e.Sotiendong).HasColumnName("SOTIENDONG");
 
-            entity.HasOne(d => d.Hocphi).WithMany(p => p.CtDonghocphis)
+            entity.HasOne(d => d.Donghocphi).WithMany(p => p.CtDonghocphis)
                 .HasForeignKey(d => new { d.Masv, d.Nienkhoa, d.Hocky })
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_CTDONGHOCPHI_HOCPHI");
@@ -104,18 +130,45 @@ public partial class QLSVContext : DbContext
                 .HasConstraintName("FK_DANGKY_SINHVIEN");
         });
 
+        modelBuilder.Entity<Donghocphi>(entity =>
+        {
+            entity.HasKey(e => new { e.Masv, e.Nienkhoa, e.Hocky });
+
+            entity.ToTable("DONGHOCPHI");
+
+            entity.Property(e => e.Masv)
+                .HasMaxLength(10)
+                .IsFixedLength()
+                .HasColumnName("MASV");
+            entity.Property(e => e.Nienkhoa)
+                .HasMaxLength(9)
+                .IsFixedLength()
+                .HasColumnName("NIENKHOA");
+            entity.Property(e => e.Hocky).HasColumnName("HOCKY");
+            entity.Property(e => e.Hocphi).HasColumnName("HOCPHI");
+
+            entity.HasOne(d => d.MasvNavigation).WithMany(p => p.Donghocphis)
+                .HasForeignKey(d => d.Masv)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_DONGHOCPHI_SINHVIEN");
+        });
+
         modelBuilder.Entity<Giangvien>(entity =>
         {
-            entity.HasKey(e => e.Magv).HasName("PK__GIANGVIE__603F38B1A3178B23");
+            entity.HasKey(e => e.Magv).HasName("PK__GIANGVIE__603F38B18439182A");
 
             entity.ToTable("GIANGVIEN");
 
-            entity.HasIndex(e => e.Email, "UQ__GIANGVIE__161CF7248A1BD286").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__GIANGVIE__161CF724AEA808A1").IsUnique();
 
             entity.Property(e => e.Magv)
                 .HasMaxLength(10)
                 .IsFixedLength()
                 .HasColumnName("MAGV");
+            entity.Property(e => e.Avatar)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("AVATAR");
             entity.Property(e => e.Chuyenmon)
                 .HasMaxLength(50)
                 .HasColumnName("CHUYENMON");
@@ -161,32 +214,9 @@ public partial class QLSVContext : DbContext
                 .HasConstraintName("FK_GIANGVIEN_KHOA");
         });
 
-        modelBuilder.Entity<Hocphi>(entity =>
-        {
-            entity.HasKey(e => new { e.Masv, e.Nienkhoa, e.Hocky });
-
-            entity.ToTable("HOCPHI");
-
-            entity.Property(e => e.Masv)
-                .HasMaxLength(10)
-                .IsFixedLength()
-                .HasColumnName("MASV");
-            entity.Property(e => e.Nienkhoa)
-                .HasMaxLength(9)
-                .IsFixedLength()
-                .HasColumnName("NIENKHOA");
-            entity.Property(e => e.Hocky).HasColumnName("HOCKY");
-            entity.Property(e => e.Hocphi1).HasColumnName("HOCPHI");
-
-            entity.HasOne(d => d.MasvNavigation).WithMany(p => p.Hocphis)
-                .HasForeignKey(d => d.Masv)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_HOCPHI_SINHVIEN");
-        });
-
         modelBuilder.Entity<Khoa>(entity =>
         {
-            entity.HasKey(e => e.Makhoa).HasName("PK__KHOA__22F41770C134CC7C");
+            entity.HasKey(e => e.Makhoa).HasName("PK__KHOA__22F417700A537E8E");
 
             entity.ToTable("KHOA");
 
@@ -201,19 +231,19 @@ public partial class QLSVContext : DbContext
 
         modelBuilder.Entity<Loainhanvien>(entity =>
         {
-            entity.HasKey(e => e.MaLoaiNv).HasName("PK__LOAINHAN__122523085B05FE22");
+            entity.HasKey(e => e.Maloainv).HasName("PK__LOAINHAN__AFCB36C640099D79");
 
             entity.ToTable("LOAINHANVIEN");
 
-            entity.Property(e => e.MaLoaiNv).HasColumnName("MaLoaiNV");
-            entity.Property(e => e.TenLoaiNv)
+            entity.Property(e => e.Maloainv).HasColumnName("MALOAINV");
+            entity.Property(e => e.Ten)
                 .HasMaxLength(100)
-                .HasColumnName("TenLoaiNV");
+                .HasColumnName("TEN");
         });
 
         modelBuilder.Entity<Lop>(entity =>
         {
-            entity.HasKey(e => e.Malop).HasName("PK__LOP__7A3DE21109765FA6");
+            entity.HasKey(e => e.Malop).HasName("PK__LOP__7A3DE211BBFCDEEF");
 
             entity.ToTable("LOP");
 
@@ -250,7 +280,7 @@ public partial class QLSVContext : DbContext
 
         modelBuilder.Entity<Loptinchi>(entity =>
         {
-            entity.HasKey(e => e.Maltc).HasName("PK__LOPTINCH__7A3D3BC66D61D1B1");
+            entity.HasKey(e => e.Maltc).HasName("PK__LOPTINCH__7A3D3BC6C2310B46");
 
             entity.ToTable("LOPTINCHI");
 
@@ -291,7 +321,7 @@ public partial class QLSVContext : DbContext
 
         modelBuilder.Entity<Monhoc>(entity =>
         {
-            entity.HasKey(e => e.Mamh).HasName("PK__MONHOC__603F69EB115E68BC");
+            entity.HasKey(e => e.Mamh).HasName("PK__MONHOC__603F69EBE2F947A1");
 
             entity.ToTable("MONHOC");
 
@@ -318,16 +348,20 @@ public partial class QLSVContext : DbContext
 
         modelBuilder.Entity<Nhanvien>(entity =>
         {
-            entity.HasKey(e => e.Manv).HasName("PK__NHANVIEN__603F51143E6704EC");
+            entity.HasKey(e => e.Manv).HasName("PK__NHANVIEN__603F5114EF0890F8");
 
             entity.ToTable("NHANVIEN");
 
-            entity.HasIndex(e => e.Email, "UQ__NHANVIEN__161CF724AFB5C14A").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__NHANVIEN__161CF7242D830D8A").IsUnique();
 
             entity.Property(e => e.Manv)
                 .HasMaxLength(10)
                 .IsFixedLength()
                 .HasColumnName("MANV");
+            entity.Property(e => e.Avatar)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("AVATAR");
             entity.Property(e => e.Danglam)
                 .HasDefaultValue(true)
                 .HasColumnName("DANGLAM");
@@ -361,34 +395,22 @@ public partial class QLSVContext : DbContext
                 .HasConstraintName("FK_NHANVIEN_LOAINHANVIEN");
         });
 
-        modelBuilder.Entity<Role>(entity =>
-        {
-            entity.HasKey(e => e.RoleId).HasName("PK__ROLES__8AFACE1AECAFC321");
-
-            entity.ToTable("ROLES");
-
-            entity.HasIndex(e => e.Description, "UQ__ROLES__4EBBBAC95E20550F").IsUnique();
-
-            entity.HasIndex(e => e.Name, "UQ__ROLES__737584F6C318F0B9").IsUnique();
-
-            entity.Property(e => e.Description).HasMaxLength(50);
-            entity.Property(e => e.Name)
-                .HasMaxLength(15)
-                .IsUnicode(false);
-        });
-
         modelBuilder.Entity<Sinhvien>(entity =>
         {
-            entity.HasKey(e => e.Masv).HasName("PK__SINHVIEN__60228A28C1924BEF");
+            entity.HasKey(e => e.Masv).HasName("PK__SINHVIEN__60228A289213D4DE");
 
             entity.ToTable("SINHVIEN");
 
-            entity.HasIndex(e => e.Email, "UQ__SINHVIEN__161CF724C27BB5D9").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__SINHVIEN__161CF7242D808803").IsUnique();
 
             entity.Property(e => e.Masv)
                 .HasMaxLength(10)
                 .IsFixedLength()
                 .HasColumnName("MASV");
+            entity.Property(e => e.Avatar)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("AVATAR");
             entity.Property(e => e.Danghoc)
                 .HasDefaultValue(true)
                 .HasColumnName("DANGHOC");
@@ -425,26 +447,24 @@ public partial class QLSVContext : DbContext
                 .HasConstraintName("FK_SINHVIEN_LOP");
         });
 
-        modelBuilder.Entity<User>(entity =>
+        modelBuilder.Entity<Token>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__USERS__1788CC4CAEB7717E");
+            entity.HasKey(e => e.TokenId).HasName("PK__TOKEN__8481DA1E65C7DF69");
 
-            entity.ToTable("USERS");
+            entity.ToTable("TOKEN");
 
-            entity.HasIndex(e => e.UserName, "UQ__USERS__C9F2845616444A15").IsUnique();
+            entity.Property(e => e.TokenId).HasColumnName("TOKEN_ID");
+            entity.Property(e => e.AccountId).HasColumnName("ACCOUNT_ID");
+            entity.Property(e => e.Expiry).HasColumnName("EXPIRY");
+            entity.Property(e => e.Token1)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("TOKEN");
 
-            entity.Property(e => e.Active).HasDefaultValue(true);
-            entity.Property(e => e.Password)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.UserName)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-
-            entity.HasOne(d => d.Role).WithMany(p => p.Users)
-                .HasForeignKey(d => d.RoleId)
+            entity.HasOne(d => d.Account).WithMany(p => p.Tokens)
+                .HasForeignKey(d => d.AccountId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_USERS_ROLES");
+                .HasConstraintName("FK_TOKEN_USER");
         });
 
         OnModelCreatingPartial(modelBuilder);

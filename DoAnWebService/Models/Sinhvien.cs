@@ -8,6 +8,8 @@ public partial class Sinhvien
 {
     public string Masv { get; set; } = null!;
 
+    public string Avatar { get; set; } = null!;
+
     public string Ho { get; set; } = null!;
 
     public string Ten { get; set; } = null!;
@@ -28,7 +30,7 @@ public partial class Sinhvien
     [JsonIgnore]
     public virtual ICollection<Dangky> Dangkies { get; set; } = new List<Dangky>();
     [JsonIgnore]
-    public virtual ICollection<Hocphi> Hocphis { get; set; } = new List<Hocphi>();
+    public virtual ICollection<Donghocphi> Donghocphis { get; set; } = new List<Donghocphi>();
     [JsonIgnore]
     public virtual Lop MalopNavigation { get; set; } = null!;
 }

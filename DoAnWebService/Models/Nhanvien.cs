@@ -8,6 +8,8 @@ public partial class Nhanvien
 {
     public string Manv { get; set; } = null!;
 
+    public string Avatar { get; set; } = null!;
+
     public string Ho { get; set; } = null!;
 
     public string Ten { get; set; } = null!;

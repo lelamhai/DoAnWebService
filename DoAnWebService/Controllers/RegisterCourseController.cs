@@ -42,7 +42,8 @@ namespace DoAnWebService.Controllers
             var subject = new Dangky
             {
                 Masv = masv,
-                Maltc = maltc
+                Maltc = maltc,
+                Huydangky = true
             };
             _context.Dangkies.Add(subject);
             await _context.SaveChangesAsync();
@@ -50,6 +51,47 @@ namespace DoAnWebService.Controllers
             {
                 Message = $"Đăng ký lớp tín chỉ {maltc} cho sinh viên {masv} thành công.",
                 Data = subject
+            });
+        }
+
+        [HttpPost("Cancel-subject")]
+        public async Task<IActionResult> CancelSubject(int maltc, string masv)
+        {
+            var student = await _context.Sinhviens.FindAsync(masv);
+            if (student == null)
+            {
+                return NotFound(new ApiResponse<Sinhvien>
+                {
+                    Message = $"Không tìm thấy sinh viên {masv}.",
+                    Data = null
+                });
+            }
+            var course = await _context.Loptinchis.FindAsync(maltc);
+            if (course == null)
+            {
+                return NotFound(new ApiResponse<Loptinchi>
+                {
+                    Message = $"Không tìm thấy lớp tín chỉ {maltc}.",
+                    Data = null
+                });
+            }
+
+            var resgisterCourse = await _context.Dangkies.FindAsync(maltc, masv);
+            if(resgisterCourse == null)
+            {
+                return NotFound(new ApiResponse<Loptinchi>
+                {
+                    Message = $"Sinh viên {masv} chưa đăng ký lớp tín chỉ {maltc}.",
+                    Data = null
+                });
+            }
+
+            resgisterCourse.Huydangky = false;
+            await _context.SaveChangesAsync();
+            return Ok(new ApiResponse<Dangky>
+            {
+                Message = $"Sinh viên {masv} hủy lớp tín chỉ {maltc}.",
+                Data = null
             });
         }
     }

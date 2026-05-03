@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DoAnWebService.Models;
 
-public partial class Hocphi
+public partial class Donghocphi
 {
     public string Masv { get; set; } = null!;
 
@@ -11,9 +12,9 @@ public partial class Hocphi
 
     public int Hocky { get; set; }
 
-    public int Hocphi1 { get; set; }
-
+    public int Hocphi { get; set; }
+    [JsonIgnore]
     public virtual ICollection<CTDonghocphi> CtDonghocphis { get; set; } = new List<CTDonghocphi>();
-
+    [JsonIgnore]
     public virtual Sinhvien MasvNavigation { get; set; } = null!;
 }

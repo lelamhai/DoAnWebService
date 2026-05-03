@@ -75,7 +75,7 @@ namespace DoAnWebService.Controllers
                 });
             }
 
-            if (await _context.Hocphis.AnyAsync(x => x.Masv == masv))
+            if (await _context.Donghocphis.AnyAsync(x => x.Masv == masv))
             {
                 return NotFound(new ApiResponse<Sinhvien>
                 {

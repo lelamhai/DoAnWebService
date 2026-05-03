@@ -15,5 +15,5 @@ public partial class CTDonghocphi
 
     public int Sotiendong { get; set; }
 
-    public virtual Hocphi Hocphi { get; set; } = null!;
+    public virtual Donghocphi Donghocphi { get; set; } = null!;
 }

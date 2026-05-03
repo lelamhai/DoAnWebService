@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DoAnWebService.Models;
 
 public partial class Giangvien
 {
     public string Magv { get; set; } = null!;
+
+    public string Avatar { get; set; } = null!;
 
     public string Makhoa { get; set; } = null!;
 
@@ -30,8 +33,8 @@ public partial class Giangvien
     public string? Chuyenmon { get; set; }
 
     public bool Dangday { get; set; }
-
+    [JsonIgnore]
     public virtual ICollection<Loptinchi> Loptinchis { get; set; } = new List<Loptinchi>();
-
+    [JsonIgnore]
     public virtual Khoa MakhoaNavigation { get; set; } = null!;
 }
