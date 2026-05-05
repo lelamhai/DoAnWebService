@@ -27,7 +27,7 @@ public partial class Loptinchi
     public DateOnly? ThoigianKetthuc { get; set; }
 
     public bool Huylop { get; set; }
-
+    [JsonIgnore]
     public virtual ICollection<Dangky> Dangkies { get; set; } = new List<Dangky>();
     [JsonIgnore]
     public virtual Giangvien MagvNavigation { get; set; } = null!;

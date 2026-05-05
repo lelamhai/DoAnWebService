@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DoAnWebService.Models;
 
@@ -14,6 +15,6 @@ public partial class CTDonghocphi
     public DateOnly Ngaydong { get; set; }
 
     public int Sotiendong { get; set; }
-
+    [JsonIgnore]
     public virtual Donghocphi Donghocphi { get; set; } = null!;
 }
