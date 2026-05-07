@@ -54,7 +54,7 @@ namespace DoAnWebService.Controllers
             });
         }
 
-        [HttpPost("Cancel-subject")]
+        [HttpPost("cancel-subject")]
         public async Task<IActionResult> CancelSubject(int maltc, string masv)
         {
             var student = await _context.Sinhviens.FindAsync(masv);

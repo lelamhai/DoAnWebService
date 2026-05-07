@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DoAnWebService.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/private/[controller]")]
     [ApiController]
     public class AccountController : ControllerBase
     {
@@ -19,12 +19,12 @@ namespace DoAnWebService.Controllers
             _context = context;
         }
 
-        [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterDTO model)
+        [HttpPost("create-account")]
+        public async Task<IActionResult> CreateAccount(CreateAccountDTO model)
         {
             if (string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Password))
             {
-                return BadRequest(new ApiResponse<RegisterDTO>
+                return BadRequest(new ApiResponse<CreateAccountDTO>
                 {
                     Message = "Username và Password không được để trống.",
                     Data = null
@@ -33,7 +33,7 @@ namespace DoAnWebService.Controllers
 
             if (_context.Users.Any(a => a.Username == model.Username))
             {
-                return BadRequest(new ApiResponse<RegisterDTO>
+                return BadRequest(new ApiResponse<CreateAccountDTO>
                 {
                     Message = "Username đã tồn tại.",
                     Data = null
@@ -52,7 +52,7 @@ namespace DoAnWebService.Controllers
 
             _context.Users.Add(newAccount);
             await _context.SaveChangesAsync();
-            return Ok(new ApiResponse<RegisterDTO>
+            return Ok(new ApiResponse<CreateAccountDTO>
             {
                 Message = $"Tạo mới tài khoản {model.Username} thành công.",
                 Data = model

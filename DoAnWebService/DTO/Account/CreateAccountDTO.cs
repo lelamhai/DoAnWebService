@@ -1,6 +1,6 @@
 ﻿namespace DoAnWebService.DTO.Account
 {
-    public class RegisterDTO
+    public class CreateAccountDTO
     {
         public string Username { get; set; }
         public string Password { get; set; }

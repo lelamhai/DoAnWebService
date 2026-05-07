@@ -31,7 +31,7 @@ namespace DoAnWebService.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginResponseDTO model)
+        public async Task<IActionResult> Login(LoginRequestDTO model)
         {
             if (string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Password))
             {
@@ -42,7 +42,9 @@ namespace DoAnWebService.Controllers
                 });
             }
 
-            var account = _context.Users.FirstOrDefault(a => a.Username == model.Username);
+            var account = await _context.Users
+                .FirstOrDefaultAsync(a => a.Username == model.Username);
+
             if (account == null)
             {
                 return Unauthorized(new ApiResponse<LoginResponseDTO>
@@ -51,7 +53,14 @@ namespace DoAnWebService.Controllers
                     Data = null
                 });
             }
-            var passwordVerificationResult = new PasswordHasher<User>().VerifyHashedPassword(account, account.Password, model.Password);
+
+            var passwordVerificationResult =
+                new PasswordHasher<User>().VerifyHashedPassword(
+                    account,
+                    account.Password,
+                    model.Password
+                );
+
             if (passwordVerificationResult == PasswordVerificationResult.Failed)
             {
                 return Unauthorized(new ApiResponse<LoginResponseDTO>
@@ -61,19 +70,150 @@ namespace DoAnWebService.Controllers
                 });
             }
 
-
-            var expiry = Convert.ToInt32(_configuration["Jwt:ExpireDays"]);
-            var tokenString = CreateToken(account);
+            var accessToken = CreateToken(account);
             var refreshToken = GenerateRefreshToken();
 
+            int refreshTokenExpireDays = Convert.ToInt32(_configuration["Jwt:RefreshTokenExpireDays"]);
 
             account.Refreshtoken = refreshToken;
-            account.Expiry = DateTime.Now.AddDays(expiry);
+            account.Expiry = DateTime.UtcNow.AddDays(refreshTokenExpireDays);
+
             await _context.SaveChangesAsync();
-            return Ok(new ApiResponse<string>
+
+            return Ok(new ApiResponse<LoginResponseDTO>
             {
                 Message = "Đăng nhập thành công.",
-                Data = tokenString
+                Data = new LoginResponseDTO
+                {
+                    AccessToken = accessToken,
+                    RefreshToken = refreshToken
+                }
+            });
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken(LoginResponseDTO model)
+        {
+            if (string.IsNullOrEmpty(model.AccessToken) || string.IsNullOrEmpty(model.RefreshToken))
+            {
+                return BadRequest(new ApiResponse<LoginResponseDTO>
+                {
+                    Message = "Access token và refresh token không được để trống.",
+                    Data = null
+                });
+            }
+
+            ClaimsPrincipal principal;
+
+            try
+            {
+                principal = GetPrincipalFromExpiredToken(model.AccessToken);
+            }
+            catch
+            {
+                return Unauthorized(new ApiResponse<LoginResponseDTO>
+                {
+                    Message = "Access token không hợp lệ.",
+                    Data = null
+                });
+            }
+
+            var username = principal.Identity?.Name;
+
+            if (string.IsNullOrEmpty(username))
+            {
+                return Unauthorized(new ApiResponse<LoginResponseDTO>
+                {
+                    Message = "Không tìm thấy username trong token.",
+                    Data = null
+                });
+            }
+
+            var account = await _context.Users
+                .FirstOrDefaultAsync(u => u.Username == username);
+
+            if (account == null)
+            {
+                return Unauthorized(new ApiResponse<LoginResponseDTO>
+                {
+                    Message = "Tài khoản không tồn tại.",
+                    Data = null
+                });
+            }
+
+            if (account.Refreshtoken != model.RefreshToken)
+            {
+                return Unauthorized(new ApiResponse<LoginResponseDTO>
+                {
+                    Message = "Refresh token không hợp lệ.",
+                    Data = null
+                });
+            }
+
+            if (account.Expiry <= DateTime.UtcNow)
+            {
+                return Unauthorized(new ApiResponse<LoginResponseDTO>
+                {
+                    Message = "Refresh token đã hết hạn. Vui lòng đăng nhập lại.",
+                    Data = null
+                });
+            }
+
+            var newAccessToken = CreateToken(account);
+            var newRefreshToken = GenerateRefreshToken();
+
+            int refreshTokenExpireDays = Convert.ToInt32(_configuration["Jwt:RefreshTokenExpireDays"]);
+
+            account.Refreshtoken = newRefreshToken;
+            account.Expiry = DateTime.UtcNow.AddDays(refreshTokenExpireDays);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new ApiResponse<LoginResponseDTO>
+            {
+                Message = "Refresh token thành công.",
+                Data = new LoginResponseDTO
+                {
+                    AccessToken = newAccessToken,
+                    RefreshToken = newRefreshToken,
+                    ExpiredToken = DateTime.UtcNow.AddDays(refreshTokenExpireDays)
+                }
+            });
+        }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout(LoginResponseDTO model)
+        {
+            if (string.IsNullOrEmpty(model.RefreshToken))
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    Message = "Refresh token không được để trống.",
+                    Data = null
+                });
+            }
+
+            var account = await _context.Users
+                .FirstOrDefaultAsync(u => u.Refreshtoken == model.RefreshToken);
+
+            if (account == null)
+            {
+                return NotFound(new ApiResponse<string>
+                {
+                    Message = "Không tìm thấy refresh token.",
+                    Data = null
+                });
+            }
+
+            account.Refreshtoken = null;
+            account.Expiry = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new ApiResponse<string>
+            {
+                Message = "Đăng xuất thành công.",
+                Data = null
             });
         }
 
@@ -94,20 +234,22 @@ namespace DoAnWebService.Controllers
                 throw new Exception("JWT Key chưa được cấu hình trong appsettings.json");
             }
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtKey)
+            );
 
             var signIn = new SigningCredentials(
                 key,
                 SecurityAlgorithms.HmacSha256
             );
 
+            var expireMinutes = Convert.ToDouble(_configuration["Jwt:ExpireMinutes"]);
+
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(
-                    Convert.ToDouble(_configuration["Jwt:ExpireMinutes"])
-                ),
+                expires: DateTime.UtcNow.AddMinutes(expireMinutes),
                 signingCredentials: signIn
             );
 
@@ -117,9 +259,62 @@ namespace DoAnWebService.Controllers
         private string GenerateRefreshToken()
         {
             var randomNumber = new byte[32];
+
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(randomNumber);
+
             return Convert.ToBase64String(randomNumber);
+        }
+
+        private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+        {
+            var jwtKey = _configuration["Jwt:Key"];
+
+            if (string.IsNullOrEmpty(jwtKey))
+            {
+                throw new Exception("JWT Key chưa được cấu hình trong appsettings.json");
+            }
+
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateIssuerSigningKey = true,
+
+                ValidIssuer = _configuration["Jwt:Issuer"],
+                ValidAudience = _configuration["Jwt:Audience"],
+
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(jwtKey)
+                ),
+
+                // Cho phép đọc token dù access token đã hết hạn
+                ValidateLifetime = false,
+
+                ClockSkew = TimeSpan.Zero
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var principal = tokenHandler.ValidateToken(
+                token,
+                tokenValidationParameters,
+                out SecurityToken securityToken
+            );
+
+            if (securityToken is not JwtSecurityToken jwtSecurityToken)
+            {
+                throw new SecurityTokenException("Token không hợp lệ.");
+            }
+
+            if (!jwtSecurityToken.Header.Alg.Equals(
+                    SecurityAlgorithms.HmacSha256,
+                    StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new SecurityTokenException("Thuật toán token không hợp lệ.");
+            }
+
+            return principal;
         }
     }
 }

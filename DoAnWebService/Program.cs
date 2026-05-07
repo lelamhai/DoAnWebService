@@ -13,16 +13,6 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<QLSVContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-//builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
-//{
-//    options.Password.RequireDigit = false;
-//    options.Password.RequiredLength = 6;
-//    options.Password.RequireNonAlphanumeric = false;
-//    options.Password.RequireUppercase = false;
-//    options.Password.RequireLowercase = false;
-//})
-//.AddEntityFrameworkStores<QLSVContext>()
-//.AddDefaultTokenProviders();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -40,7 +30,8 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
+        ClockSkew = TimeSpan.Zero
     };
 });
 

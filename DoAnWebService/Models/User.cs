@@ -13,7 +13,7 @@ public partial class User
 
     public string? Refreshtoken { get; set; }
     
-    public DateTime? Expiry { get; set; }
+    public DateTime Expiry { get; set; }
     
     public string Role { get; set; } = null!;
 }
