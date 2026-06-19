@@ -9,5 +9,9 @@
         public string Makhoa { get; set; } = null!;
 
         public string Manv { get; set; } = null!;
+
+        public DateOnly Ngaymolop { get; set; }
+
+        public int Trangthai { get; set; }
     }
 }

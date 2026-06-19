@@ -2,6 +2,7 @@
 using DoAnWebService.DTO.Account;
 using DoAnWebService.Models;
 using DoAnWebService.Utlis;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ namespace DoAnWebService.Controllers
 {
     [Route("api/v1/private/[controller]")]
     [ApiController]
+    //[Authorize]
     public class AccountController : ControllerBase
     {
         private readonly QLSVContext _context;

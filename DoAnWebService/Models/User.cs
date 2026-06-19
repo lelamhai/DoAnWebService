@@ -12,8 +12,8 @@ public partial class User
     public string Password { get; set; } = null!;
 
     public string? Refreshtoken { get; set; }
-    
-    public DateTime Expiry { get; set; }
-    
+
+    public DateTime? Expiry { get; set; }
+
     public string Role { get; set; } = null!;
 }

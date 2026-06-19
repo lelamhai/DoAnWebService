@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace DoAnWebService.Models;
 
@@ -26,9 +25,9 @@ public partial class Nhanvien
 
     public int MaLoaiNv { get; set; }
 
-    public bool Danglam { get; set; }
-    [JsonIgnore]
+    public int Trangthai { get; set; }
+
     public virtual ICollection<Lop> Lops { get; set; } = new List<Lop>();
-    [JsonIgnore]
+
     public virtual Loainhanvien MaLoaiNvNavigation { get; set; } = null!;
 }
