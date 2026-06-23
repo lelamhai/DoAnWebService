@@ -6,12 +6,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DoAnWebService.Controllers
 {
     [Route("api/v1/private/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class AccountController : ControllerBase
     {
         private readonly QLSVContext _context;
@@ -26,7 +27,7 @@ namespace DoAnWebService.Controllers
         {
             if (string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Password))
             {
-                return BadRequest(new ApiResponse<CreateAccountDTO>
+                return BadRequest(new APIResponse<CreateAccountDTO>
                 {
                     Message = "Username và Password không được để trống.",
                     Data = null
@@ -35,7 +36,7 @@ namespace DoAnWebService.Controllers
 
             if (_context.Users.Any(a => a.Username == model.Username))
             {
-                return BadRequest(new ApiResponse<CreateAccountDTO>
+                return BadRequest(new APIResponse<CreateAccountDTO>
                 {
                     Message = "Username đã tồn tại.",
                     Data = null
@@ -54,10 +55,61 @@ namespace DoAnWebService.Controllers
 
             _context.Users.Add(newAccount);
             await _context.SaveChangesAsync();
-            return Ok(new ApiResponse<CreateAccountDTO>
+            return Ok(new APIResponse<CreateAccountDTO>
             {
                 Message = $"Tạo mới tài khoản {model.Username} thành công.",
                 Data = model
+            });
+        }
+
+        [HttpGet("info-account")]
+        public async Task<IActionResult> InfoAccount(string username)
+        {
+            username = username.Trim();
+
+            // Kiểm tra Nhân viên
+            var nhanVien = await _context.Nhanviens
+                .FirstOrDefaultAsync(x => x.Manv == username);
+
+            if (nhanVien != null)
+            {
+                return Ok(new APIResponse<Nhanvien>
+                {
+                    Message = $"Thông tin tài khoản thành công.",
+                    Data = nhanVien
+                });
+            }
+
+            // Kiểm tra Giảng viên
+            var giangVien = await _context.Giangviens
+                .FirstOrDefaultAsync(x => x.Magv == username);
+
+            if (giangVien != null)
+            {
+                return Ok(new APIResponse<Giangvien>
+                {
+                    Message = $"Thông tin tài khoản thành công.",
+                    Data = giangVien
+                });
+            }
+
+            // Kiểm tra Sinh viên
+            var sinhVien = await _context.Sinhviens
+                .FirstOrDefaultAsync(x => x.Masv == username);
+
+            if (sinhVien != null)
+            {
+                return Ok(new APIResponse<Sinhvien>
+                {
+                    Message = $"Thông tin tài khoản thành công.",
+                    Data = sinhVien
+                });
+            }
+
+            return NotFound(new APIResponse<Sinhvien>
+            {
+                Message = $"Không tìm thấy thông tin tài khoản.",
+                Data = null
             });
         }
     }

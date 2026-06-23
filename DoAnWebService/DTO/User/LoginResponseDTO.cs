@@ -5,5 +5,6 @@
         public string AccessToken { get; set; } = null!;
         public string RefreshToken { get; set; } = null!;
         public DateTime ExpiredToken { get; set; }
+        public string Role { get; set; } = null!;
     }
 }

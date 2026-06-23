@@ -35,7 +35,7 @@ namespace DoAnWebService.Controllers
         {
             if (string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Password))
             {
-                return BadRequest(new ApiResponse<LoginResponseDTO>
+                return BadRequest(new APIResponse<LoginResponseDTO>
                 {
                     Message = "Username và Password không được để trống.",
                     Data = null
@@ -47,7 +47,7 @@ namespace DoAnWebService.Controllers
 
             if (account == null)
             {
-                return Unauthorized(new ApiResponse<LoginResponseDTO>
+                return Unauthorized(new APIResponse<LoginResponseDTO>
                 {
                     Message = "Sai username hoặc tài khoản không hoạt động.",
                     Data = null
@@ -63,7 +63,7 @@ namespace DoAnWebService.Controllers
 
             if (passwordVerificationResult == PasswordVerificationResult.Failed)
             {
-                return Unauthorized(new ApiResponse<LoginResponseDTO>
+                return Unauthorized(new APIResponse<LoginResponseDTO>
                 {
                     Message = "Mật khẩu không đúng.",
                     Data = null
@@ -80,13 +80,14 @@ namespace DoAnWebService.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok(new ApiResponse<LoginResponseDTO>
+            return Ok(new APIResponse<LoginResponseDTO>
             {
                 Message = "Đăng nhập thành công.",
                 Data = new LoginResponseDTO
                 {
                     AccessToken = accessToken,
-                    RefreshToken = refreshToken
+                    RefreshToken = refreshToken,
+                    Role = account.Role,
                 }
             });
         }
@@ -96,7 +97,7 @@ namespace DoAnWebService.Controllers
         {
             if (string.IsNullOrEmpty(model.AccessToken) || string.IsNullOrEmpty(model.RefreshToken))
             {
-                return BadRequest(new ApiResponse<LoginResponseDTO>
+                return BadRequest(new APIResponse<LoginResponseDTO>
                 {
                     Message = "Access token và refresh token không được để trống.",
                     Data = null
@@ -111,7 +112,7 @@ namespace DoAnWebService.Controllers
             }
             catch
             {
-                return Unauthorized(new ApiResponse<LoginResponseDTO>
+                return Unauthorized(new APIResponse<LoginResponseDTO>
                 {
                     Message = "Access token không hợp lệ.",
                     Data = null
@@ -122,7 +123,7 @@ namespace DoAnWebService.Controllers
 
             if (string.IsNullOrEmpty(username))
             {
-                return Unauthorized(new ApiResponse<LoginResponseDTO>
+                return Unauthorized(new APIResponse<LoginResponseDTO>
                 {
                     Message = "Không tìm thấy username trong token.",
                     Data = null
@@ -134,7 +135,7 @@ namespace DoAnWebService.Controllers
 
             if (account == null)
             {
-                return Unauthorized(new ApiResponse<LoginResponseDTO>
+                return Unauthorized(new APIResponse<LoginResponseDTO>
                 {
                     Message = "Tài khoản không tồn tại.",
                     Data = null
@@ -143,7 +144,7 @@ namespace DoAnWebService.Controllers
 
             if (account.Refreshtoken != model.RefreshToken)
             {
-                return Unauthorized(new ApiResponse<LoginResponseDTO>
+                return Unauthorized(new APIResponse<LoginResponseDTO>
                 {
                     Message = "Refresh token không hợp lệ.",
                     Data = null
@@ -152,7 +153,7 @@ namespace DoAnWebService.Controllers
 
             if (account.Expiry <= DateTime.UtcNow)
             {
-                return Unauthorized(new ApiResponse<LoginResponseDTO>
+                return Unauthorized(new APIResponse<LoginResponseDTO>
                 {
                     Message = "Refresh token đã hết hạn. Vui lòng đăng nhập lại.",
                     Data = null
@@ -169,7 +170,7 @@ namespace DoAnWebService.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok(new ApiResponse<LoginResponseDTO>
+            return Ok(new APIResponse<LoginResponseDTO>
             {
                 Message = "Refresh token thành công.",
                 Data = new LoginResponseDTO
@@ -186,7 +187,7 @@ namespace DoAnWebService.Controllers
         {
             if (string.IsNullOrEmpty(model.RefreshToken))
             {
-                return BadRequest(new ApiResponse<string>
+                return BadRequest(new APIResponse<string>
                 {
                     Message = "Refresh token không được để trống.",
                     Data = null
@@ -198,7 +199,7 @@ namespace DoAnWebService.Controllers
 
             if (account == null)
             {
-                return NotFound(new ApiResponse<string>
+                return NotFound(new APIResponse<string>
                 {
                     Message = "Không tìm thấy refresh token.",
                     Data = null
@@ -210,7 +211,7 @@ namespace DoAnWebService.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok(new ApiResponse<string>
+            return Ok(new APIResponse<string>
             {
                 Message = "Đăng xuất thành công.",
                 Data = null
