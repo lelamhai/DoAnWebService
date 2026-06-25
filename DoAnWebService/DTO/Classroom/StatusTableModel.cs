@@ -1,6 +1,6 @@
 ﻿namespace DoAnWebService.DTO.Classroom
 {
-    public class StatusClassroomModel
+    public class StatusTableModel
     {
         public int ID { get; set; }
         public string Name { get; set; }

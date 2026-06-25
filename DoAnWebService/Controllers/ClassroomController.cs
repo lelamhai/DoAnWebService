@@ -1,6 +1,5 @@
 ﻿using DoAnWebService.Data;
 using DoAnWebService.DTO.Classroom;
-using DoAnWebService.DTO.Lop;
 using DoAnWebService.Models;
 using DoAnWebService.Utils;
 using DoAnWebService.Utlis;
@@ -19,7 +18,7 @@ namespace DoAnWebService.Controllers
 {
     [Route("api/v1/private/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class ClassroomController : ControllerBase
     {
         
@@ -72,7 +71,7 @@ namespace DoAnWebService.Controllers
         [HttpGet("get-status-classrooms")]
         public async Task<IActionResult> GetStatusClassrooms()
         {
-            List<StatusClassroomModel> list = new();
+            List<StatusTableModel> list = new();
             using (SqlConnection conn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
                 using (SqlCommand cmd = new SqlCommand("SP_LAYTRANGTHAILOP", conn))
@@ -83,7 +82,7 @@ namespace DoAnWebService.Controllers
                     {
                         while (await reader.ReadAsync())
                         {
-                            list.Add(new StatusClassroomModel
+                            list.Add(new StatusTableModel
                             {
                                 ID = (int)reader["ID"],
                                 Name = reader["TENTRANGTHAI"].ToString()
@@ -92,7 +91,7 @@ namespace DoAnWebService.Controllers
                     }
                 }
             }
-            return Ok(new APIResponse<List<StatusClassroomModel>>
+            return Ok(new APIResponse<List<StatusTableModel>>
             {
                 Message = "Lấy danh sách trạng thái lớp thành công.",
                 Data = list

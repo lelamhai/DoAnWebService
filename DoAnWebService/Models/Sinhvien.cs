@@ -7,8 +7,6 @@ public partial class Sinhvien
 {
     public string Masv { get; set; } = null!;
 
-    public string Avatar { get; set; } = null!;
-
     public string Ho { get; set; } = null!;
 
     public string Ten { get; set; } = null!;

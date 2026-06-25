@@ -366,10 +366,6 @@ public partial class QLSVContext : DbContext
                 .HasMaxLength(10)
                 .IsFixedLength()
                 .HasColumnName("MASV");
-            entity.Property(e => e.Avatar)
-                .HasMaxLength(255)
-                .IsUnicode(false)
-                .HasColumnName("AVATAR");
             entity.Property(e => e.Diachi)
                 .HasMaxLength(100)
                 .HasColumnName("DIACHI");
