@@ -320,24 +320,92 @@ namespace DoAnWebService.Controllers
             }
         }
 
-        //[HttpPost("create-classroom")]
-        //public async Task<IActionResult> CreateClassroom(CreateClassroomDTO classroomDTO)
-        //{
-        //    var newClassroom = new Lop
-        //    {
-        //        Malop = classroomDTO.Malop,
-        //        Tenlop = classroomDTO.Tenlop,
-        //        Khoahoc = classroomDTO.Khoahoc,
-        //        Makhoa = classroomDTO.Makhoa,
-        //        Manv = classroomDTO.Manv
-        //    };
-        //    _context.Lops.Add(newClassroom);
-        //    await _context.SaveChangesAsync();
-        //    return Ok(new APIResponse<Lop>
-        //    {
-        //        Message = $"Tạo mới lớp {classroomDTO.Malop} thành công.",
-        //        Data = newClassroom
-        //    });
-        //}
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateClassroom(UpdateModel model)
+        {
+            if (string.IsNullOrWhiteSpace(model.MaLop))
+            {
+                return BadRequest(new
+                {
+                    message = "Mã lớp không hợp lệ."
+                });
+            }
+
+            if (model == null)
+            {
+                return BadRequest(new
+                {
+                    message = "Dữ liệu cập nhật không hợp lệ."
+                });
+            }
+
+            if (!DateTime.TryParseExact(
+                model.NgayMoLop,
+                new[] { "dd/MM/yyyy", "yyyy-MM-dd" },
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out DateTime ngayMoLop))
+            {
+                return BadRequest(new
+                {
+                    message = "Ngày mở lớp không đúng định dạng. Vui lòng nhập dd/MM/yyyy."
+                });
+            }
+
+            try
+            {
+                using var conn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
+                using var cmd = new SqlCommand("SP_TAO_LOP", conn);
+
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.Add("@MALOP", SqlDbType.NVarChar, 20).Value = model.MaLop;
+                cmd.Parameters.Add("@TENLOP", SqlDbType.NVarChar, 100).Value = model.TenLop;
+                cmd.Parameters.Add("@KHOAHOC", SqlDbType.NVarChar, 20).Value = model.KhoaHoc;
+                cmd.Parameters.Add("@MAKHOA", SqlDbType.NVarChar, 20).Value = model.MaKhoa;
+                cmd.Parameters.Add("@MANV", SqlDbType.NVarChar, 20).Value = "NV00000001";
+                cmd.Parameters.Add("@NGAYMOLOP", SqlDbType.Date).Value = ngayMoLop;
+                cmd.Parameters.Add("@TRANGTHAI", SqlDbType.Int).Value = model.TrangThai;
+
+                var messageParam = new SqlParameter("@MESSAGE", SqlDbType.NVarChar, 200)
+                {
+                    Direction = ParameterDirection.Output
+                };
+
+                cmd.Parameters.Add(messageParam);
+
+                await conn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+
+                var result = messageParam.Value?.ToString();
+                if(result == "0")
+                {
+                    return Ok(new APIResponse<string>
+                    {
+                        Message = "Tạo lớp thành công."
+                    });
+                }    
+
+                return BadRequest(new APIResponse<string>
+                {
+                    Message = "Tạo lớp thất bại. Mã lớp đã tồn tại."
+                });
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    message = "Có lỗi xảy ra khi cập nhật lớp.",
+                    error = ex.Message
+                });
+            }
+        }
     }
 }
