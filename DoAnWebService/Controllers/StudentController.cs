@@ -24,8 +24,8 @@ namespace DoAnWebService.Controllers
             _configuration = configuration;
         }
 
-        [HttpPost("get-classroom")]
-        public async Task<IActionResult> GetClassroom()
+        [HttpGet("get-classrooms")]
+        public async Task<IActionResult> GetClassrooms()
         {
             List<ClassroomModelStudent> list = new();
             using (SqlConnection conn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
@@ -47,6 +47,8 @@ namespace DoAnWebService.Controllers
                     }
                 }
             }
+
+
             return Ok(new APIResponse<List<ClassroomModelStudent>>
             {
                 Message = "Lấy danh sách trạng thái lớp thành công.",
@@ -54,7 +56,7 @@ namespace DoAnWebService.Controllers
             });
         }
 
-        [HttpPost("get-status-student")]
+        [HttpGet("get-status-student")]
         public async Task<IActionResult> GetStatusStudent()
         {
             List<StatusTableModel> list = new();
@@ -84,8 +86,8 @@ namespace DoAnWebService.Controllers
             });
         }
 
-        [HttpGet("get-student")]
-        public async Task<IActionResult> GetStudent(int page = 1)
+        [HttpGet("get-students")]
+        public async Task<IActionResult> GetStudents(int page)
         {
             List<StudentModel> list = new();
             using (SqlConnection conn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
@@ -118,10 +120,10 @@ namespace DoAnWebService.Controllers
                 }
             }
             var result = PaginationHelper.CreatePagedResult(list, page, -1);
-            return Ok(new APIResponse<List<StudentModel>>
+            return Ok(new APIResponse<PagedResult<StudentModel>>
             {
-                Message = "Lấy danh sách sinh viên thành công.",
-                Data = list
+                Message = "Lấy danh sách lớp thành công.",
+                Data = result
             });
         }
 
@@ -166,7 +168,8 @@ namespace DoAnWebService.Controllers
             });
         }
 
-        [HttpDelete("delete")]
+
+        [HttpDelete("delete/{masv}")]
         public async Task<IActionResult> Delete(string masv)
         {
             try
@@ -194,18 +197,16 @@ namespace DoAnWebService.Controllers
                 {
                     return Ok(new
                     {
-                        success = true,
                         message = "Xóa sinh viên thành công"
                     });
                 }
 
                 return BadRequest(new
                 {
-                    success = false,
                     message = "Không tìm thấy sinh viên"
                 });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(new
                 {
@@ -250,7 +251,9 @@ namespace DoAnWebService.Controllers
                             Sodienthoai = reader["SODIENTHOAI"].ToString(),
                             Ngaysinh = Convert.ToDateTime(reader["NGAYSINH"]).ToString("dd/MM/yyyy"),
                             Email = reader["EMAIL"].ToString(),
-                            Tenlop = reader["MALOP"].ToString(),
+                            Malop = reader["MALOP"].ToString(),
+                            Tenlop = reader["TENLOP"].ToString(),
+                            Id = (int)reader["ID"],
                             Trangthai = reader["TENTRANGTHAI"].ToString()
                         });
                     }

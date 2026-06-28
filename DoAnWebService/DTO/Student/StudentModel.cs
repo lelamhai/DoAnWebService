@@ -18,7 +18,11 @@
 
         public string Email { get; set; }
 
+        public string Malop { get; set; }
+
         public string Tenlop { get; set; } = null!;
+
+        public int Id { get; set; }
 
         public string Trangthai { get; set; }
     }
