@@ -7,8 +7,6 @@ public partial class Giangvien
 {
     public string Magv { get; set; } = null!;
 
-    public string Avatar { get; set; } = null!;
-
     public string Makhoa { get; set; } = null!;
 
     public string Ho { get; set; } = null!;

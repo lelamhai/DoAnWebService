@@ -12,7 +12,7 @@ namespace DoAnWebService.Controllers
 {
     [Route("api/v1/private/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class AccountController : ControllerBase
     {
         private readonly QLSVContext _context;
@@ -71,12 +71,17 @@ namespace DoAnWebService.Controllers
             var nhanVien = await _context.Nhanviens
                 .FirstOrDefaultAsync(x => x.Manv == username);
 
+            UserInfoModel userInfo = new UserInfoModel();
             if (nhanVien != null)
             {
-                return Ok(new APIResponse<Nhanvien>
+                userInfo.Username = nhanVien.Manv;
+                userInfo.Ho = nhanVien.Ho;
+                userInfo.Ten = nhanVien.Ten;
+                userInfo.Trangthai = nhanVien.Trangthai;
+                return Ok(new APIResponse<UserInfoModel>
                 {
                     Message = $"Thông tin tài khoản thành công.",
-                    Data = nhanVien
+                    Data = userInfo
                 });
             }
 
@@ -86,10 +91,14 @@ namespace DoAnWebService.Controllers
 
             if (giangVien != null)
             {
-                return Ok(new APIResponse<Giangvien>
+                userInfo.Username = giangVien.Magv;
+                userInfo.Ho = giangVien.Ho;
+                userInfo.Ten = giangVien.Ten;
+                userInfo.Trangthai = giangVien.Trangthai;
+                return Ok(new APIResponse<UserInfoModel>
                 {
                     Message = $"Thông tin tài khoản thành công.",
-                    Data = giangVien
+                    Data = userInfo
                 });
             }
 
@@ -99,14 +108,18 @@ namespace DoAnWebService.Controllers
 
             if (sinhVien != null)
             {
-                return Ok(new APIResponse<Sinhvien>
+                userInfo.Username = sinhVien.Masv;
+                userInfo.Ho = sinhVien.Ho;
+                userInfo.Ten = sinhVien.Ten;
+                userInfo.Trangthai = sinhVien.Trangthai;
+                return Ok(new APIResponse<UserInfoModel>
                 {
                     Message = $"Thông tin tài khoản thành công.",
-                    Data = sinhVien
+                    Data = userInfo
                 });
             }
 
-            return NotFound(new APIResponse<Sinhvien>
+            return NotFound(new APIResponse<string>
             {
                 Message = $"Không tìm thấy thông tin tài khoản.",
                 Data = null
