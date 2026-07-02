@@ -47,7 +47,12 @@ public partial class QLSVContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Name=ConnectionStrings:DefaultConnection");
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseSqlServer("Name=ConnectionStrings:DefaultConnection");
+        }
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
