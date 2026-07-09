@@ -1,4 +1,5 @@
 ﻿using DoAnWebService.DTO.Classroom;
+using DoAnWebService.DTO.Employment;
 using DoAnWebService.DTO.Student;
 using DoAnWebService.Utils;
 using DoAnWebService.Utlis;
@@ -437,35 +438,35 @@ namespace DoAnWebService.Controllers
                                 ? null
                                 : reader["MAMH"].ToString(),
 
-                                                TenMH = reader["TENMH"] == DBNull.Value
+                                TenMH = reader["TENMH"] == DBNull.Value
                                 ? null
                                 : reader["TENMH"].ToString(),
 
-                                                SoTinChi = reader["SOTINCHI"] == DBNull.Value
+                                SoTinChi = reader["SOTINCHI"] == DBNull.Value
                                 ? 0
                                 : Convert.ToInt32(reader["SOTINCHI"]),
 
-                                                NienKhoa = reader["NIENKHOA"] == DBNull.Value
+                                NienKhoa = reader["NIENKHOA"] == DBNull.Value
                                 ? null
                                 : reader["NIENKHOA"].ToString(),
 
-                                                HocKy = reader["HOCKY"] == DBNull.Value
+                                HocKy = reader["HOCKY"] == DBNull.Value
                                 ? 0
                                 : Convert.ToInt32(reader["HOCKY"]),
 
-                                                DiemCC = reader["DIEM_CC"] == DBNull.Value
+                                DiemCC = reader["DIEM_CC"] == DBNull.Value
                                 ? null
                                 : Convert.ToDecimal(reader["DIEM_CC"]),
 
-                                                DiemGK = reader["DIEM_GK"] == DBNull.Value
+                                DiemGK = reader["DIEM_GK"] == DBNull.Value
                                 ? null
                                 : Convert.ToDecimal(reader["DIEM_GK"]),
 
-                                                DiemCK = reader["DIEM_CK"] == DBNull.Value
+                                DiemCK = reader["DIEM_CK"] == DBNull.Value
                                 ? null
                                 : Convert.ToDecimal(reader["DIEM_CK"]),
 
-                                                DiemTong = reader["DIEM_TONG"] == DBNull.Value
+                                DiemTong = reader["DIEM_TONG"] == DBNull.Value
                                 ? null
                                 : Convert.ToDecimal(reader["DIEM_TONG"])
                             });
@@ -481,6 +482,5 @@ namespace DoAnWebService.Controllers
                 Data = result
             });
         }
-
     }
 }

@@ -126,7 +126,6 @@ namespace DoAnWebService.Controllers
             }
 
             var result = PaginationHelper.CreatePagedResult(list, page, -1);
-
             return Ok(new APIResponse<PagedResult<LTCModel>>
             {
                 Message = "Lấy danh sách lớp tín chỉ thành công.",
