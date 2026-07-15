@@ -18,10 +18,9 @@ namespace DoAnWebService.Controllers
 {
     [Route("api/v1/private/[controller]")]
     [ApiController]
-    //[Authorize]
+    //[Authorize(Roles = "NV")]
     public class ClassroomController : ControllerBase
     {
-        
         private readonly IConfiguration _configuration;
 
         public ClassroomController(IConfiguration configuration)
@@ -245,7 +244,6 @@ namespace DoAnWebService.Controllers
 
         }
 
-
         [HttpPut("update/{malop}")]
         public async Task<IActionResult> Update(string malop, UpdateModel model)
         {
@@ -299,7 +297,7 @@ namespace DoAnWebService.Controllers
 
                 return Ok(new
                 {
-                    message = result.ToString() ?? "Cập nhật lớp thành công."
+                    message = "Cập nhật lớp thành công."
                 });
             }
             catch (SqlException ex)
@@ -354,7 +352,7 @@ namespace DoAnWebService.Controllers
             try
             {
                 using var conn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
-                using var cmd = new SqlCommand("SP_TAO_LOP", conn);
+                using var cmd = new SqlCommand("SP_THEM_LOP", conn);
 
                 cmd.CommandType = CommandType.StoredProcedure;
 

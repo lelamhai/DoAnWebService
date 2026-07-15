@@ -9,7 +9,7 @@ using System.Data;
 
 namespace DoAnWebService.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/private/[controller]")]
     [ApiController]
     public class LTCController : ControllerBase
     {

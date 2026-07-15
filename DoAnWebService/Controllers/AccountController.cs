@@ -12,7 +12,7 @@ namespace DoAnWebService.Controllers
 {
     [Route("api/v1/private/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class AccountController : ControllerBase
     {
         private readonly QLSVContext _context;

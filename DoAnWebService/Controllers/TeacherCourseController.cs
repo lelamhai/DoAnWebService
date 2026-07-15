@@ -1,6 +1,7 @@
 ﻿using DoAnWebService.DTO.Student;
 using DoAnWebService.Utils;
 using DoAnWebService.Utlis;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -8,8 +9,9 @@ using System.Data;
 
 namespace DoAnWebService.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/private/[controller]")]
     [ApiController]
+    [Authorize(Roles = "GV")]
     public class TeacherCourseController : ControllerBase
     {
         private readonly IConfiguration _configuration;

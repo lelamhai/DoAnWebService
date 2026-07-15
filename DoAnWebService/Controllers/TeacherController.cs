@@ -3,6 +3,7 @@ using DoAnWebService.DTO.Student;
 using DoAnWebService.DTO.Teacher;
 using DoAnWebService.Utils;
 using DoAnWebService.Utlis;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using System.Data;
@@ -12,7 +13,7 @@ namespace DoAnWebService.Controllers
 {
     [Route("api/v1/private/[controller]")]
     [ApiController]
-    //[Authorize]
+    //[Authorize(Roles = "NV")]
     public class TeacherController : ControllerBase
     {
         private readonly IConfiguration _configuration;
@@ -446,7 +447,7 @@ namespace DoAnWebService.Controllers
 
                 return Ok(new APIResponse<List<TeacherModel>>
                 {
-                    Message = "Lấy chi tiết một sinh viên thành công.",
+                    Message = "Lấy chi tiết một giảng viên thành công.",
                     Data = list
                 });
             }

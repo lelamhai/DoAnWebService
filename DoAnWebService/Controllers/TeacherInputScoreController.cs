@@ -2,15 +2,18 @@
 using DoAnWebService.DTO.Teacher;
 using DoAnWebService.Utils;
 using DoAnWebService.Utlis;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
 namespace DoAnWebService.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/private/[controller]")]
     [ApiController]
+    [Authorize(Roles = "GV")]
     public class TeacherInputScoreController : ControllerBase
     {
         private readonly IConfiguration _configuration;
@@ -19,6 +22,7 @@ namespace DoAnWebService.Controllers
         {
             _configuration = configuration;
         }
+
 
         [HttpGet("get-teacher-inputscore")]
         public async Task<IActionResult> GetInputScore(string maGv, int page = 1)

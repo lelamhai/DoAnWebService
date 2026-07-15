@@ -182,34 +182,33 @@ namespace DoAnWebService.Controllers
             });
         }
 
+        [Authorize]
         [HttpPost("logout")]
-        public async Task<IActionResult> Logout(LoginResponseDTO model)
+        public async Task<IActionResult> Logout(LogoutDTO model)
         {
-            if (string.IsNullOrEmpty(model.RefreshToken))
+            if (string.IsNullOrWhiteSpace(model.username))
             {
                 return BadRequest(new APIResponse<string>
                 {
-                    Message = "Refresh token không được để trống.",
+                    Message = "Username không được để trống.",
                     Data = null
                 });
             }
+
 
             var account = await _context.Users
-                .FirstOrDefaultAsync(u => u.Refreshtoken == model.RefreshToken);
+                .FirstOrDefaultAsync(
+                    u => u.Username == model.username);
 
-            if (account == null)
+
+            if (account != null)
             {
-                return NotFound(new APIResponse<string>
-                {
-                    Message = "Không tìm thấy refresh token.",
-                    Data = null
-                });
+                account.Refreshtoken = null;
+                account.Expiry = null;
+
+                await _context.SaveChangesAsync();
             }
 
-            account.Refreshtoken = null;
-            account.Expiry = DateTime.UtcNow;
-
-            await _context.SaveChangesAsync();
 
             return Ok(new APIResponse<string>
             {

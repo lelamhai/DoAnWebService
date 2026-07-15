@@ -12,13 +12,13 @@ using System.Globalization;
 
 namespace DoAnWebService.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/private/[controller]")]
     [ApiController]
-    public class EmploymentController : ControllerBase
+    public class CourseSectionController : ControllerBase
     {
         private readonly IConfiguration _configuration;
 
-        public EmploymentController(IConfiguration configuration)
+        public CourseSectionController(IConfiguration configuration)
         {
             _configuration = configuration;
         }
@@ -182,6 +182,30 @@ namespace DoAnWebService.Controllers
             });
         }
 
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchTeachers(string? keyword)
+        {
+            return Ok();
+        }
+
+        [HttpDelete("delete/{ltc}")]
+        public async Task<IActionResult> Delete(int ltc)
+        {
+           return Ok();
+        }
+
+        [HttpGet("detail/{ltc}")]
+        public async Task<IActionResult> Detail(int ltc)
+        {
+            return Ok();
+        }
+
+        [HttpPut("update/{ltc}")]
+        public async Task<IActionResult> Update(string ltc, UpdateTeacherModel model)
+        {
+            return Ok();
+        }
+
         [HttpPost("create")]
         public async Task<IActionResult> Create(CreateLTCModel model)
         {
@@ -299,5 +323,6 @@ namespace DoAnWebService.Controllers
                 });
             }
         }
+
     }
 }
