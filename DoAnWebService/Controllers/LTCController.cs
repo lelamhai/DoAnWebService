@@ -13,125 +13,125 @@ namespace DoAnWebService.Controllers
     [ApiController]
     public class LTCController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
+        //private readonly IConfiguration _configuration;
 
-        public LTCController(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
+        //public LTCController(IConfiguration configuration)
+        //{
+        //    _configuration = configuration;
+        //}
 
-        [HttpGet("get-ltc")]
-        public async Task<IActionResult> GetLopTinChi(int page = 1)
-        {
-            List<LTCModel> list = new();
+        //[HttpGet("get-ltc")]
+        //public async Task<IActionResult> GetLopTinChi(int page = 1)
+        //{
+        //    List<LTCModel> list = new();
 
-            using (SqlConnection conn = new SqlConnection(
-                _configuration.GetConnectionString("DefaultConnection")))
-            {
-                using (SqlCommand cmd = new SqlCommand("SP_LAYDS_LTC", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
+        //    using (SqlConnection conn = new SqlConnection(
+        //        _configuration.GetConnectionString("DefaultConnection")))
+        //    {
+        //        using (SqlCommand cmd = new SqlCommand("SP_LAYDS_LTC", conn))
+        //        {
+        //            cmd.CommandType = CommandType.StoredProcedure;
 
-                    await conn.OpenAsync();
+        //            await conn.OpenAsync();
 
-                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            list.Add(new LTCModel
-                            {
-                                MaLtc = reader["MALTC"] == DBNull.Value
-                                    ? 0
-                                    : Convert.ToInt32(reader["MALTC"]),
+        //            using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+        //            {
+        //                while (await reader.ReadAsync())
+        //                {
+        //                    list.Add(new LTCModel
+        //                    {
+        //                        MaLtc = reader["MALTC"] == DBNull.Value
+        //                            ? 0
+        //                            : Convert.ToInt32(reader["MALTC"]),
 
-                                NienKhoa = reader["NIENKHOA"] == DBNull.Value
-                                    ? string.Empty
-                                    : reader["NIENKHOA"].ToString()!,
+        //                        NienKhoa = reader["NIENKHOA"] == DBNull.Value
+        //                            ? string.Empty
+        //                            : reader["NIENKHOA"].ToString()!,
 
-                                HocKy = reader["HOCKY"] == DBNull.Value
-                                    ? 0
-                                    : Convert.ToInt32(reader["HOCKY"]),
+        //                        HocKy = reader["HOCKY"] == DBNull.Value
+        //                            ? 0
+        //                            : Convert.ToInt32(reader["HOCKY"]),
 
-                                MaMh = reader["MAMH"] == DBNull.Value
-                                    ? string.Empty
-                                    : reader["MAMH"].ToString()!,
+        //                        MaMh = reader["MAMH"] == DBNull.Value
+        //                            ? string.Empty
+        //                            : reader["MAMH"].ToString()!,
 
-                                TenMh = reader["TENMH"] == DBNull.Value
-                                    ? string.Empty
-                                    : reader["TENMH"].ToString()!,
+        //                        TenMh = reader["TENMH"] == DBNull.Value
+        //                            ? string.Empty
+        //                            : reader["TENMH"].ToString()!,
 
-                                SoTinChi = reader["SOTINCHI"] == DBNull.Value
-                                    ? 0
-                                    : Convert.ToInt32(reader["SOTINCHI"]),
+        //                        SoTinChi = reader["SOTINCHI"] == DBNull.Value
+        //                            ? 0
+        //                            : Convert.ToInt32(reader["SOTINCHI"]),
 
-                                SoTietLt = reader["SOTIET_LT"] == DBNull.Value
-                                    ? 0
-                                    : Convert.ToInt32(reader["SOTIET_LT"]),
+        //                        SoTietLt = reader["SOTIET_LT"] == DBNull.Value
+        //                            ? 0
+        //                            : Convert.ToInt32(reader["SOTIET_LT"]),
 
-                                SoTietTh = reader["SOTIET_TH"] == DBNull.Value
-                                    ? 0
-                                    : Convert.ToInt32(reader["SOTIET_TH"]),
+        //                        SoTietTh = reader["SOTIET_TH"] == DBNull.Value
+        //                            ? 0
+        //                            : Convert.ToInt32(reader["SOTIET_TH"]),
 
-                                MaGv = reader["MAGV"] == DBNull.Value
-                                    ? null
-                                    : reader["MAGV"].ToString(),
+        //                        MaGv = reader["MAGV"] == DBNull.Value
+        //                            ? null
+        //                            : reader["MAGV"].ToString(),
 
-                                TenGiangVien = reader["TENGIANGVIEN"] == DBNull.Value
-                                    ? null
-                                    : reader["TENGIANGVIEN"].ToString(),
+        //                        TenGiangVien = reader["TENGIANGVIEN"] == DBNull.Value
+        //                            ? null
+        //                            : reader["TENGIANGVIEN"].ToString(),
 
-                                SiSoHienTai = reader["SISO_HIENTAI"] == DBNull.Value
-                                    ? 0
-                                    : Convert.ToInt32(reader["SISO_HIENTAI"]),
+        //                        SiSoHienTai = reader["SISO_HIENTAI"] == DBNull.Value
+        //                            ? 0
+        //                            : Convert.ToInt32(reader["SISO_HIENTAI"]),
 
-                                SiSoToiDa = reader["SISO_TOIDA"] == DBNull.Value
-                                    ? 0
-                                    : Convert.ToInt32(reader["SISO_TOIDA"]),
+        //                        SiSoToiDa = reader["SISO_TOIDA"] == DBNull.Value
+        //                            ? 0
+        //                            : Convert.ToInt32(reader["SISO_TOIDA"]),
 
-                                SiSo = reader["SISO"] == DBNull.Value
-                                    ? string.Empty
-                                    : reader["SISO"].ToString()!,
+        //                        SiSo = reader["SISO"] == DBNull.Value
+        //                            ? string.Empty
+        //                            : reader["SISO"].ToString()!,
 
-                                DayThuTrongTuan =
-                                    reader["DAY_THUTRONGTUAN"] == DBNull.Value
-                                        ? string.Empty
-                                        : reader["DAY_THUTRONGTUAN"].ToString()!,
+        //                        DayThuTrongTuan =
+        //                            reader["DAY_THUTRONGTUAN"] == DBNull.Value
+        //                                ? string.Empty
+        //                                : reader["DAY_THUTRONGTUAN"].ToString()!,
 
-                                LichHoc = reader["LICHHOC"] == DBNull.Value
-                                    ? string.Empty
-                                    : reader["LICHHOC"].ToString()!,
+        //                        LichHoc = reader["LICHHOC"] == DBNull.Value
+        //                            ? string.Empty
+        //                            : reader["LICHHOC"].ToString()!,
 
-                                ThoiGianBatDau =
-                                    reader["THOIGIAN_BATDAU"] == DBNull.Value
-                                        ? null
-                                        : Convert.ToDateTime(
-                                            reader["THOIGIAN_BATDAU"]),
+        //                        ThoiGianBatDau =
+        //                            reader["THOIGIAN_BATDAU"] == DBNull.Value
+        //                                ? null
+        //                                : Convert.ToDateTime(
+        //                                    reader["THOIGIAN_BATDAU"]),
 
-                                ThoiGianKetThuc =
-                                    reader["THOIGIAN_KETTHUC"] == DBNull.Value
-                                        ? null
-                                        : Convert.ToDateTime(
-                                            reader["THOIGIAN_KETTHUC"]),
+        //                        ThoiGianKetThuc =
+        //                            reader["THOIGIAN_KETTHUC"] == DBNull.Value
+        //                                ? null
+        //                                : Convert.ToDateTime(
+        //                                    reader["THOIGIAN_KETTHUC"]),
 
-                                ThoiGianHoc = reader["THOIGIAN_HOC"] == DBNull.Value
-                                    ? string.Empty
-                                    : reader["THOIGIAN_HOC"].ToString()!,
+        //                        ThoiGianHoc = reader["THOIGIAN_HOC"] == DBNull.Value
+        //                            ? string.Empty
+        //                            : reader["THOIGIAN_HOC"].ToString()!,
 
-                                HuyLop = reader["HUYLOP"] != DBNull.Value
-                                         && Convert.ToInt32(reader["HUYLOP"]) == 1
-                            });
-                        }
-                    }
-                }
-            }
+        //                        HuyLop = reader["HUYLOP"] != DBNull.Value
+        //                                 && Convert.ToInt32(reader["HUYLOP"]) == 1
+        //                    });
+        //                }
+        //            }
+        //        }
+        //    }
 
-            var result = PaginationHelper.CreatePagedResult(list, page, -1);
-            return Ok(new APIResponse<PagedResult<LTCModel>>
-            {
-                Message = "Lấy danh sách lớp tín chỉ thành công.",
-                Data = result
-            });
-        }
+        //    var result = PaginationHelper.CreatePagedResult(list, page, -1);
+        //    return Ok(new APIResponse<PagedResult<LTCModel>>
+        //    {
+        //        Message = "Lấy danh sách lớp tín chỉ thành công.",
+        //        Data = result
+        //    });
+        //}
         
     }
 }

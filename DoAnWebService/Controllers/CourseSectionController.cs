@@ -182,147 +182,660 @@ namespace DoAnWebService.Controllers
             });
         }
 
-        [HttpGet("search")]
-        public async Task<IActionResult> SearchTeachers(string? keyword)
-        {
-            return Ok();
-        }
+        //[HttpGet("search")]
+        //public async Task<IActionResult> SearchTeachers(string? keyword)
+        //{
+        //    return Ok();
+        //}
 
-        [HttpDelete("delete/{ltc}")]
-        public async Task<IActionResult> Delete(int ltc)
+        [HttpDelete("delete/{maLtc}")]
+        public async Task<IActionResult> Delete(int maLtc)
         {
-           return Ok();
-        }
-
-        [HttpGet("detail/{ltc}")]
-        public async Task<IActionResult> Detail(int ltc)
-        {
-            return Ok();
-        }
-
-        [HttpPut("update/{ltc}")]
-        public async Task<IActionResult> Update(string ltc, UpdateTeacherModel model)
-        {
-            return Ok();
-        }
-
-        [HttpPost("create")]
-        public async Task<IActionResult> Create(CreateLTCModel model)
-        {
-            try
+            if (maLtc <= 0)
             {
-                if (!DateTime.TryParseExact(
-                    model.ThoiGianBatDau,
-                    new[] { "dd/MM/yyyy", "yyyy-MM-dd" },
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.None,
-                    out DateTime ngayThoiGianBatDau))
+                return BadRequest(new APIResponse<object>
                 {
-                    return BadRequest(new
-                    {
-                        message = "Ngày sinh không đúng định dạng. " +
-                                  "Vui lòng nhập dd/MM/yyyy hoặc yyyy-MM-dd."
-                    });
-                }
-
-                if (!DateTime.TryParseExact(
-                   model.ThoiGianKetThuc,
-                   new[] { "dd/MM/yyyy", "yyyy-MM-dd" },
-                   CultureInfo.InvariantCulture,
-                   DateTimeStyles.None,
-                   out DateTime ngayThoiGianKetThuc))
-                {
-                    return BadRequest(new
-                    {
-                        message = "Ngày sinh không đúng định dạng. " +
-                                  "Vui lòng nhập dd/MM/yyyy hoặc yyyy-MM-dd."
-                    });
-                }
-
-                using var conn = new SqlConnection(
-                    _configuration.GetConnectionString("DefaultConnection")
-                );
-                using var cmd = new SqlCommand("SP_THEM_LTC", conn);
-
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                cmd.Parameters.Add("@NIENKHOA", SqlDbType.NChar, 9)
-                    .Value = model.NienKhoa.Trim();
-
-                cmd.Parameters.Add("@HOCKY", SqlDbType.Int)
-                    .Value = model.HocKy;
-
-                cmd.Parameters.Add("@MAMH", SqlDbType.NChar, 10)
-                    .Value = model.MaMH.Trim();
-
-                cmd.Parameters.Add("@MAGV", SqlDbType.NChar, 10)
-                    .Value = model.MaGV.Trim();
-
-                cmd.Parameters.Add("@SISO_TOIDA", SqlDbType.Int)
-                    .Value = model.SiSoToiDa;
-
-                cmd.Parameters.Add("@DAY_THUTRONGTUAN", SqlDbType.VarChar, 50)
-                    .Value = string.IsNullOrWhiteSpace(model.DayThuTrongTuan)
-                        ? DBNull.Value
-                        : model.DayThuTrongTuan.Trim();
-                
-                cmd.Parameters.Add("@THOIGIAN_BATDAU", SqlDbType.Date)
-                    .Value = ngayThoiGianBatDau;
-
-                cmd.Parameters.Add("@THOIGIAN_KETTHUC", SqlDbType.Date)
-                    .Value = ngayThoiGianKetThuc;
-
-                cmd.Parameters.Add("@HUYLOP", SqlDbType.Bit)
-                    .Value = model.HuyLop;
-
-                var messageParam = new SqlParameter(
-                    "@MESSAGE",
-                    SqlDbType.NVarChar,
-                    200
-                )
-                {
-                    Direction = ParameterDirection.Output
-                };
-
-                cmd.Parameters.Add(messageParam);
-
-                await conn.OpenAsync();
-                await cmd.ExecuteNonQueryAsync();
-
-                string message = messageParam.Value?.ToString() ?? "0";
-
-                if (message == "0")
-                {
-                    return NotFound(new APIResponse<object>
-                    {
-                        Message = "Không tìm thấy giảng viên",
-                        Data = null
-                    });
-                }
-
-                return Ok(new APIResponse<object>
-                {
-                    Message = "Thêm mới LTC thành công",
+                    Message = "Mã lớp tín chỉ không hợp lệ.",
                     Data = null
                 });
             }
+
+
+
+            try
+            {
+
+                using (SqlConnection conn = new SqlConnection(
+                    _configuration.GetConnectionString("DefaultConnection")))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand(
+                        "SP_XOA_LTC",
+                        conn))
+                    {
+
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+
+                        cmd.Parameters.Add("@MALTC",
+                            SqlDbType.Int)
+                            .Value = maLtc;
+
+
+
+                        await conn.OpenAsync();
+
+
+
+                        using (SqlDataReader reader =
+                            await cmd.ExecuteReaderAsync())
+                        {
+
+                            if (await reader.ReadAsync())
+                            {
+
+                                return Ok(new APIResponse<object>
+                                {
+                                    Message = "Xóa lớp tín chỉ thành công.",
+                                    Data = null
+                                });
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+
+
+                return BadRequest(new APIResponse<object>
+                {
+                    Message = "Không thể xóa lớp tín chỉ.",
+                    Data = null
+                });
+
+
+            }
             catch (SqlException ex)
             {
-                return BadRequest(new
+
+                return BadRequest(new APIResponse<object>
                 {
-                    message = "Lỗi cơ sở dữ liệu",
-                    error = ex.Message
+                    Message = ex.Message,
+                    Data = null
                 });
+
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    message = "Lỗi hệ thống",
-                    error = ex.Message
-                });
+
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    new APIResponse<object>
+                    {
+                        Message = "Lỗi hệ thống: " + ex.Message,
+                        Data = null
+                    });
+
             }
         }
 
+        [HttpGet("detail/{maLtc}")]
+        public async Task<IActionResult> Detail(int maLtc)
+        {
+
+            if (maLtc <= 0)
+            {
+                return BadRequest(new APIResponse<object>
+                {
+                    Message = "Mã lớp tín chỉ không hợp lệ.",
+                    Data = null
+                });
+            }
+
+
+
+            ChiTietLTCModel? model = null;
+
+
+
+            using (SqlConnection conn = new SqlConnection(
+                _configuration.GetConnectionString("DefaultConnection")))
+            {
+
+                using (SqlCommand cmd = new SqlCommand(
+                    "SP_LAYMOT_LTC",
+                    conn))
+                {
+
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+
+
+                    cmd.Parameters.Add("@MALTC",
+                        SqlDbType.Int)
+                        .Value = maLtc;
+
+
+
+                    await conn.OpenAsync();
+
+
+
+                    using (SqlDataReader reader =
+                        await cmd.ExecuteReaderAsync())
+                    {
+
+                        if (await reader.ReadAsync())
+                        {
+
+                            model = new ChiTietLTCModel
+                            {
+
+
+                                MaLtc =
+                                reader["MALTC"] == DBNull.Value
+                                ? 0
+                                : Convert.ToInt32(reader["MALTC"]),
+
+
+
+                                NienKhoa =
+                                reader["NIENKHOA"] == DBNull.Value
+                                ? string.Empty
+                                : reader["NIENKHOA"].ToString()!,
+
+
+
+                                HocKy =
+                                reader["HOCKY"] == DBNull.Value
+                                ? 0
+                                : Convert.ToInt32(reader["HOCKY"]),
+
+
+
+                                SiSoToiDa =
+                                reader["SISO_TOIDA"] == DBNull.Value
+                                ? 0
+                                : Convert.ToInt32(reader["SISO_TOIDA"]),
+
+
+
+                                DayThuTrongTuan =
+                                reader["DAY_THUTRONGTUAN"] == DBNull.Value
+                                ? null
+                                : reader["DAY_THUTRONGTUAN"].ToString(),
+
+
+
+                                ThoiGianBatDau =
+                                reader["THOIGIAN_BATDAU"] == DBNull.Value
+                                ? null
+                                : Convert.ToDateTime(
+                                    reader["THOIGIAN_BATDAU"]),
+
+
+
+                                ThoiGianKetThuc =
+                                reader["THOIGIAN_KETTHUC"] == DBNull.Value
+                                ? null
+                                : Convert.ToDateTime(
+                                    reader["THOIGIAN_KETTHUC"]),
+
+
+
+                                HuyLop =
+                                reader["HUYLOP"] != DBNull.Value
+                                &&
+                                Convert.ToBoolean(reader["HUYLOP"]),
+
+
+
+
+                                // Môn học
+
+                                MaMh =
+                                reader["MAMH"] == DBNull.Value
+                                ? string.Empty
+                                : reader["MAMH"].ToString()!,
+
+
+
+                                TenMh =
+                                reader["TENMH"] == DBNull.Value
+                                ? string.Empty
+                                : reader["TENMH"].ToString()!,
+
+
+
+                                SoTietLt =
+                                reader["SOTIET_LT"] == DBNull.Value
+                                ? 0
+                                : Convert.ToInt32(reader["SOTIET_LT"]),
+
+
+
+                                SoTietTh =
+                                reader["SOTIET_TH"] == DBNull.Value
+                                ? 0
+                                : Convert.ToInt32(reader["SOTIET_TH"]),
+
+
+
+                                SoTinChi =
+                                reader["SOTINCHI"] == DBNull.Value
+                                ? 0
+                                : Convert.ToInt32(reader["SOTINCHI"]),
+
+
+
+
+
+                                // Giảng viên
+
+                                MaGv =
+                                reader["MAGV"] == DBNull.Value
+                                ? string.Empty
+                                : reader["MAGV"].ToString()!,
+
+
+
+                                TenGiangVien =
+                                reader["TENGIANGVIEN"] == DBNull.Value
+                                ? string.Empty
+                                : reader["TENGIANGVIEN"].ToString()!,
+
+
+
+                                Email =
+                                reader["EMAIL"] == DBNull.Value
+                                ? null
+                                : reader["EMAIL"].ToString(),
+
+
+
+                                SoDienThoai =
+                                reader["SODIENTHOAI"] == DBNull.Value
+                                ? null
+                                : reader["SODIENTHOAI"].ToString(),
+
+
+
+                                HocVi =
+                                reader["HOCVI"] == DBNull.Value
+                                ? null
+                                : reader["HOCVI"].ToString(),
+
+
+
+                                HocHam =
+                                reader["HOCHAM"] == DBNull.Value
+                                ? null
+                                : reader["HOCHAM"].ToString(),
+
+
+
+                                ChuyenMon =
+                                reader["CHUYENMON"] == DBNull.Value
+                                ? null
+                                : reader["CHUYENMON"].ToString()
+
+                            };
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+
+
+            if (model == null)
+            {
+                return NotFound(new APIResponse<object>
+                {
+                    Message = $"Không tìm thấy lớp tín chỉ có mã {maLtc}.",
+                    Data = null
+                });
+            }
+
+
+
+            return Ok(new APIResponse<ChiTietLTCModel>
+            {
+                Message = "Lấy chi tiết lớp tín chỉ thành công.",
+                Data = model
+            });
+        }
+
+        [HttpPut("update/{maLtc}")]
+        public async Task<IActionResult> Update(int maLtc, CapNhatLTCModel model)
+        {
+            if (model == null)
+            {
+                return BadRequest(new APIResponse<object>
+                {
+                    Message = "Dữ liệu cập nhật không được để trống.",
+                    Data = null
+                });
+            }
+
+
+            if (model.MaLtc <= 0)
+            {
+                return BadRequest(new APIResponse<object>
+                {
+                    Message = "Mã lớp tín chỉ không hợp lệ.",
+                    Data = null
+                });
+            }
+
+
+
+            try
+            {
+
+                using (SqlConnection conn = new SqlConnection(
+                    _configuration.GetConnectionString("DefaultConnection")))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand(
+                        "SP_CAPNHAT_LTC",
+                        conn))
+                    {
+
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+
+
+                        cmd.Parameters.Add("@MALTC",
+                            SqlDbType.Int)
+                            .Value = model.MaLtc;
+
+
+
+                        cmd.Parameters.Add("@NIENKHOA",
+                            SqlDbType.VarChar, 20)
+                            .Value = model.NienKhoa.Trim();
+
+
+
+                        cmd.Parameters.Add("@HOCKY",
+                            SqlDbType.Int)
+                            .Value = model.HocKy;
+
+
+
+                        cmd.Parameters.Add("@MAMH",
+                            SqlDbType.VarChar, 20)
+                            .Value = model.MaMh.Trim();
+
+
+
+                        cmd.Parameters.Add("@MAGV",
+                            SqlDbType.VarChar, 20)
+                            .Value = model.MaGv.Trim();
+
+
+
+                        cmd.Parameters.Add("@SISO_TOIDA",
+                            SqlDbType.Int)
+                            .Value = model.SiSoToiDa;
+
+
+
+                        cmd.Parameters.Add("@DAY_THUTRONGTUAN",
+                            SqlDbType.NVarChar, 50)
+                            .Value = model.DayThuTrongTuan;
+
+
+
+                        cmd.Parameters.Add("@THOIGIAN_BATDAU",
+                            SqlDbType.DateTime)
+                            .Value = model.ThoiGianBatDau;
+
+
+
+                        cmd.Parameters.Add("@THOIGIAN_KETTHUC",
+                            SqlDbType.DateTime)
+                            .Value = model.ThoiGianKetThuc;
+
+
+
+                        cmd.Parameters.Add("@HUYLOP",
+                            SqlDbType.Bit)
+                            .Value = model.HuyLop;
+
+
+
+                        await conn.OpenAsync();
+
+
+
+                        using (SqlDataReader reader =
+                            await cmd.ExecuteReaderAsync())
+                        {
+
+                            if (await reader.ReadAsync())
+                            {
+
+                                return Ok(new APIResponse<object>
+                                {
+                                    Message = "Cập nhật lớp tín chỉ thành công.",
+                                    Data = null
+                                });
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+
+
+                return BadRequest(new APIResponse<object>
+                {
+                    Message = "Không thể cập nhật lớp tín chỉ.",
+                    Data = null
+                });
+
+
+            }
+            catch (SqlException ex)
+            {
+
+                return BadRequest(new APIResponse<object>
+                {
+                    Message = ex.Message,
+                    Data = null
+                });
+
+            }
+            catch (Exception ex)
+            {
+
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    new APIResponse<object>
+                    {
+                        Message = "Lỗi hệ thống: " + ex.Message,
+                        Data = null
+                    });
+
+            }
+
+        }
+
+        [HttpPost("create")]
+        public async Task<IActionResult> Create(ThemLTCModel model)
+        {
+            if (model == null)
+            {
+                return BadRequest(new APIResponse<object>
+                {
+                    Message = "Dữ liệu không được để trống.",
+                    Data = null
+                });
+            }
+
+
+
+            if (string.IsNullOrWhiteSpace(model.MaMh))
+            {
+                return BadRequest(new APIResponse<object>
+                {
+                    Message = "Mã môn học không được để trống.",
+                    Data = null
+                });
+            }
+
+
+
+            if (string.IsNullOrWhiteSpace(model.MaGv))
+            {
+                return BadRequest(new APIResponse<object>
+                {
+                    Message = "Mã giảng viên không được để trống.",
+                    Data = null
+                });
+            }
+
+
+
+            int maLtc = 0;
+
+
+
+            try
+            {
+
+                using (SqlConnection conn = new SqlConnection(
+                    _configuration.GetConnectionString("DefaultConnection")))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand(
+                        "SP_THEM_LTC",
+                        conn))
+                    {
+
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+
+
+                        cmd.Parameters.Add("@NIENKHOA",
+                            SqlDbType.VarChar, 20)
+                            .Value = model.NienKhoa.Trim();
+
+
+
+                        cmd.Parameters.Add("@HOCKY",
+                            SqlDbType.Int)
+                            .Value = model.HocKy;
+
+
+
+                        cmd.Parameters.Add("@MAMH",
+                            SqlDbType.VarChar, 20)
+                            .Value = model.MaMh.Trim();
+
+
+
+                        cmd.Parameters.Add("@MAGV",
+                            SqlDbType.VarChar, 20)
+                            .Value = model.MaGv.Trim();
+
+
+
+                        cmd.Parameters.Add("@SISO_TOIDA",
+                            SqlDbType.Int)
+                            .Value = model.SiSoToiDa;
+
+
+
+                        cmd.Parameters.Add("@DAY_THUTRONGTUAN",
+                            SqlDbType.NVarChar, 50)
+                            .Value = model.DayThuTrongTuan;
+
+
+
+                        cmd.Parameters.Add("@THOIGIAN_BATDAU",
+                            SqlDbType.DateTime)
+                            .Value = model.ThoiGianBatDau;
+
+
+
+                        cmd.Parameters.Add("@THOIGIAN_KETTHUC",
+                            SqlDbType.DateTime)
+                            .Value = model.ThoiGianKetThuc;
+
+
+
+                        cmd.Parameters.Add("@HUYLOP",
+                            SqlDbType.Bit)
+                            .Value = model.HuyLop;
+
+
+
+                        await conn.OpenAsync();
+
+
+
+                        using (SqlDataReader reader =
+                            await cmd.ExecuteReaderAsync())
+                        {
+
+                            if (await reader.ReadAsync())
+                            {
+
+                                maLtc = reader["MALTC"] == DBNull.Value
+                                    ? 0
+                                    : Convert.ToInt32(reader["MALTC"]);
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+
+
+                return Ok(new APIResponse<object>
+                {
+                    Message = "Thêm lớp tín chỉ thành công.",
+                    Data = null
+                });
+
+
+            }
+            catch (SqlException ex)
+            {
+
+                return BadRequest(new APIResponse<object>
+                {
+                    Message = ex.Message,
+                    Data = null
+                });
+
+            }
+            catch (Exception ex)
+            {
+
+                return StatusCode(500,
+                    new APIResponse<object>
+                    {
+                        Message = "Lỗi hệ thống: " + ex.Message,
+                        Data = null
+                    });
+
+            }
+        }
     }
 }

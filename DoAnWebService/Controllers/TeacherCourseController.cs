@@ -1,4 +1,5 @@
 ﻿using DoAnWebService.DTO.Student;
+using DoAnWebService.DTO.Teacher;
 using DoAnWebService.Utils;
 using DoAnWebService.Utlis;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +12,7 @@ namespace DoAnWebService.Controllers
 {
     [Route("api/v1/private/[controller]")]
     [ApiController]
-    [Authorize(Roles = "GV")]
+    //[Authorize(Roles = "GV")]
     public class TeacherCourseController : ControllerBase
     {
         private readonly IConfiguration _configuration;
@@ -21,10 +22,8 @@ namespace DoAnWebService.Controllers
             _configuration = configuration;
         }
 
-        [HttpGet("get-teacher-subject")]
-        public async Task<IActionResult> GetTeacherSubject(
-    [FromQuery] string maGv,
-    [FromQuery] int page = 1)
+        [HttpGet("get-list")]
+        public async Task<IActionResult> GetTeacherSubject(string maGv)
         {
             if (string.IsNullOrWhiteSpace(maGv))
             {
@@ -35,163 +34,164 @@ namespace DoAnWebService.Controllers
                 });
             }
 
-            if (page < 1)
+
+
+            List<LTC_GVModel> list = new();
+
+
+
+            using (SqlConnection conn = new SqlConnection(
+                _configuration.GetConnectionString("DefaultConnection")))
             {
-                page = 1;
-            }
 
-            List<LTCModel> list = new();
-
-            try
-            {
-                string? connectionString =
-                    _configuration.GetConnectionString("DefaultConnection");
-
-                if (string.IsNullOrWhiteSpace(connectionString))
+                using (SqlCommand cmd = new SqlCommand(
+                    "SP_LAYDS_LTC_GV",
+                    conn))
                 {
-                    return StatusCode(
-                        StatusCodes.Status500InternalServerError,
-                        new APIResponse<object>
-                        {
-                            Message = "Không tìm thấy chuỗi kết nối cơ sở dữ liệu.",
-                            Data = null
-                        });
-                }
 
-                using SqlConnection conn = new SqlConnection(connectionString);
+                    cmd.CommandType = CommandType.StoredProcedure;
 
-                using SqlCommand cmd =
-                    new SqlCommand("SP_LAYDS_LTC_GV", conn);
 
-                cmd.CommandType = CommandType.StoredProcedure;
 
-                cmd.Parameters.Add("@MAGV", SqlDbType.VarChar, 20).Value =
-                    maGv.Trim();
+                    cmd.Parameters.Add("@MAGV",
+                        SqlDbType.VarChar, 20)
+                        .Value = maGv.Trim();
 
-                await conn.OpenAsync();
 
-                using SqlDataReader reader = await cmd.ExecuteReaderAsync();
 
-                while (await reader.ReadAsync())
-                {
-                    list.Add(new LTCModel
+                    await conn.OpenAsync();
+
+
+
+                    using (SqlDataReader reader =
+                        await cmd.ExecuteReaderAsync())
                     {
-                        MaLtc = reader["MALTC"] == DBNull.Value
-                            ? 0
-                            : Convert.ToInt32(reader["MALTC"]),
 
-                        NienKhoa = reader["NIENKHOA"] == DBNull.Value
-                            ? string.Empty
-                            : reader["NIENKHOA"].ToString()!,
+                        while (await reader.ReadAsync())
+                        {
 
-                        HocKy = reader["HOCKY"] == DBNull.Value
-                            ? 0
-                            : Convert.ToInt32(reader["HOCKY"]),
+                            list.Add(new LTC_GVModel
+                            {
 
-                        MaMh = reader["MAMH"] == DBNull.Value
-                            ? string.Empty
-                            : reader["MAMH"].ToString()!,
+                                MaLtc =
+                                reader["MALTC"] == DBNull.Value
+                                ? 0
+                                : Convert.ToInt32(reader["MALTC"]),
 
-                        TenMh = reader["TENMH"] == DBNull.Value
-                            ? string.Empty
-                            : reader["TENMH"].ToString()!,
 
-                        SoTinChi = reader["SOTINCHI"] == DBNull.Value
-                            ? 0
-                            : Convert.ToInt32(reader["SOTINCHI"]),
 
-                        SoTietLt = reader["SOTIET_LT"] == DBNull.Value
-                            ? 0
-                            : Convert.ToInt32(reader["SOTIET_LT"]),
-
-                        SoTietTh = reader["SOTIET_TH"] == DBNull.Value
-                            ? 0
-                            : Convert.ToInt32(reader["SOTIET_TH"]),
-
-                        MaGv = reader["MAGV"] == DBNull.Value
-                            ? null
-                            : reader["MAGV"].ToString(),
-
-                        TenGiangVien = reader["TENGIANGVIEN"] == DBNull.Value
-                            ? null
-                            : reader["TENGIANGVIEN"].ToString(),
-
-                        SiSoHienTai = reader["SISO_HIENTAI"] == DBNull.Value
-                            ? 0
-                            : Convert.ToInt32(reader["SISO_HIENTAI"]),
-
-                        SiSoToiDa = reader["SISO_TOIDA"] == DBNull.Value
-                            ? 0
-                            : Convert.ToInt32(reader["SISO_TOIDA"]),
-
-                        SiSo = reader["SISO"] == DBNull.Value
-                            ? string.Empty
-                            : reader["SISO"].ToString()!,
-
-                        DayThuTrongTuan =
-                            reader["DAY_THUTRONGTUAN"] == DBNull.Value
+                                NienKhoa =
+                                reader["NIENKHOA"] == DBNull.Value
                                 ? string.Empty
-                                : reader["DAY_THUTRONGTUAN"].ToString()!,
+                                : reader["NIENKHOA"].ToString()!,
 
-                        LichHoc = reader["LICHHOC"] == DBNull.Value
-                            ? string.Empty
-                            : reader["LICHHOC"].ToString()!,
 
-                        ThoiGianBatDau =
-                            reader["THOIGIAN_BATDAU"] == DBNull.Value
+
+                                HocKy =
+                                reader["HOCKY"] == DBNull.Value
+                                ? 0
+                                : Convert.ToInt32(reader["HOCKY"]),
+
+
+
+                                MaMh =
+                                reader["MAMH"] == DBNull.Value
+                                ? string.Empty
+                                : reader["MAMH"].ToString()!,
+
+
+
+                                TenMh =
+                                reader["TENMH"] == DBNull.Value
+                                ? string.Empty
+                                : reader["TENMH"].ToString()!,
+
+
+
+                                SoTinChi =
+                                reader["SOTINCHI"] == DBNull.Value
+                                ? 0
+                                : Convert.ToInt32(reader["SOTINCHI"]),
+
+
+
+                                MaGv =
+                                reader["MAGV"] == DBNull.Value
+                                ? string.Empty
+                                : reader["MAGV"].ToString()!,
+
+
+
+                                TenGiangVien =
+                                reader["TENGIANGVIEN"] == DBNull.Value
+                                ? null
+                                : reader["TENGIANGVIEN"].ToString(),
+
+
+
+                                SiSoToiDa =
+                                reader["SISO_TOIDA"] == DBNull.Value
+                                ? 0
+                                : Convert.ToInt32(reader["SISO_TOIDA"]),
+
+
+
+                                DayThuTrongTuan =
+                                reader["DAY_THUTRONGTUAN"] == DBNull.Value
+                                ? null
+                                : reader["DAY_THUTRONGTUAN"].ToString(),
+
+
+
+                                ThoiGianBatDau =
+                                reader["THOIGIAN_BATDAU"] == DBNull.Value
                                 ? null
                                 : Convert.ToDateTime(
                                     reader["THOIGIAN_BATDAU"]),
 
-                        ThoiGianKetThuc =
-                            reader["THOIGIAN_KETTHUC"] == DBNull.Value
+
+
+                                ThoiGianKetThuc =
+                                reader["THOIGIAN_KETTHUC"] == DBNull.Value
                                 ? null
                                 : Convert.ToDateTime(
                                     reader["THOIGIAN_KETTHUC"]),
 
-                        ThoiGianHoc = reader["THOIGIAN_HOC"] == DBNull.Value
-                            ? string.Empty
-                            : reader["THOIGIAN_HOC"].ToString()!,
 
-                        HuyLop = reader["HUYLOP"] != DBNull.Value
-                                 && Convert.ToInt32(reader["HUYLOP"]) == 1
-                    });
+
+                                HuyLop =
+                                reader["HUYLOP"] != DBNull.Value
+                                &&
+                                Convert.ToBoolean(reader["HUYLOP"])
+
+                            });
+
+                        }
+
+                    }
+
                 }
 
-                var result = PaginationHelper.CreatePagedResult(
-                    list,
-                    page,
-                    10
-                );
+            }
 
-                return Ok(new APIResponse<PagedResult<LTCModel>>
+
+
+            if (list.Count == 0)
+            {
+                return NotFound(new APIResponse<object>
                 {
-                    Message = list.Count > 0
-                        ? "Lấy danh sách môn giảng dạy thành công."
-                        : "Giảng viên chưa được phân công lớp học phần nào.",
-                    Data = result
+                    Message = $"Giảng viên {maGv} chưa được phân công lớp tín chỉ.",
+                    Data = null
                 });
             }
-            catch (SqlException ex)
+
+
+
+            return Ok(new APIResponse<List<LTC_GVModel>>
             {
-                return StatusCode(
-                    StatusCodes.Status500InternalServerError,
-                    new APIResponse<object>
-                    {
-                        Message = $"Lỗi cơ sở dữ liệu: {ex.Message}",
-                        Data = null
-                    });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(
-                    StatusCodes.Status500InternalServerError,
-                    new APIResponse<object>
-                    {
-                        Message = $"Đã xảy ra lỗi: {ex.Message}",
-                        Data = null
-                    });
-            }
+                Message = "Lấy danh sách lớp tín chỉ của giảng viên thành công.",
+                Data = list
+            });
         }
     }
 }

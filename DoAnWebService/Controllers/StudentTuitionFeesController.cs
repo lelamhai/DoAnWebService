@@ -13,100 +13,100 @@ namespace DoAnWebService.Controllers
     [ApiController]
     public class StudentTuitionFeesController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
+        //private readonly IConfiguration _configuration;
 
-        public StudentTuitionFeesController(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
+        //public StudentTuitionFeesController(IConfiguration configuration)
+        //{
+        //    _configuration = configuration;
+        //}
 
-        [HttpGet("list")]
-        public async Task<IActionResult> List(string maSv)
-        {
-            if (string.IsNullOrWhiteSpace(maSv))
-            {
-                return BadRequest(new APIResponse<object>
-                {
-                    Message = "Mã sinh viên không được để trống.",
-                    Data = null
-                });
-            }
-
-
-            List<HocPhiModel> list = new();
+        //[HttpGet("list")]
+        //public async Task<IActionResult> List(string maSv)
+        //{
+        //    if (string.IsNullOrWhiteSpace(maSv))
+        //    {
+        //        return BadRequest(new APIResponse<object>
+        //        {
+        //            Message = "Mã sinh viên không được để trống.",
+        //            Data = null
+        //        });
+        //    }
 
 
-            using (SqlConnection conn = new SqlConnection(
-                _configuration.GetConnectionString("DefaultConnection")))
-            {
-                using (SqlCommand cmd = new SqlCommand("SP_HOCPHI", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
+        //    List<HocPhiModel> list = new();
 
 
-                    cmd.Parameters.Add("@MASV", SqlDbType.VarChar, 20)
-                        .Value = maSv.Trim();
+        //    using (SqlConnection conn = new SqlConnection(
+        //        _configuration.GetConnectionString("DefaultConnection")))
+        //    {
+        //        using (SqlCommand cmd = new SqlCommand("SP_HOCPHI", conn))
+        //        {
+        //            cmd.CommandType = CommandType.StoredProcedure;
 
 
-                    await conn.OpenAsync();
+        //            cmd.Parameters.Add("@MASV", SqlDbType.VarChar, 20)
+        //                .Value = maSv.Trim();
 
 
-                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            list.Add(new HocPhiModel
-                            {
-                                MaSv = reader["MASV"] == DBNull.Value
-                                    ? string.Empty
-                                    : reader["MASV"].ToString()!,
+        //            await conn.OpenAsync();
 
 
-                                NienKhoa = reader["NIENKHOA"] == DBNull.Value
-                                    ? string.Empty
-                                    : reader["NIENKHOA"].ToString()!,
+        //            using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+        //            {
+        //                while (await reader.ReadAsync())
+        //                {
+        //                    list.Add(new HocPhiModel
+        //                    {
+        //                        MaSv = reader["MASV"] == DBNull.Value
+        //                            ? string.Empty
+        //                            : reader["MASV"].ToString()!,
 
 
-                                HocKy = reader["HOCKY"] == DBNull.Value
-                                    ? 0
-                                    : Convert.ToInt32(reader["HOCKY"]),
+        //                        NienKhoa = reader["NIENKHOA"] == DBNull.Value
+        //                            ? string.Empty
+        //                            : reader["NIENKHOA"].ToString()!,
 
 
-                                SoMonHoc = reader["SOMONHOC"] == DBNull.Value
-                                    ? 0
-                                    : Convert.ToInt32(reader["SOMONHOC"]),
+        //                        HocKy = reader["HOCKY"] == DBNull.Value
+        //                            ? 0
+        //                            : Convert.ToInt32(reader["HOCKY"]),
 
 
-                                TongSoTinChi = reader["TONGSOTINCHI"] == DBNull.Value
-                                    ? 0
-                                    : Convert.ToInt32(reader["TONGSOTINCHI"]),
+        //                        SoMonHoc = reader["SOMONHOC"] == DBNull.Value
+        //                            ? 0
+        //                            : Convert.ToInt32(reader["SOMONHOC"]),
 
 
-                                TongHocPhi = reader["TONGHOCPHI"] == DBNull.Value
-                                    ? 0
-                                    : Convert.ToInt64(reader["TONGHOCPHI"])
-                            });
-                        }
-                    }
-                }
-            }
+        //                        TongSoTinChi = reader["TONGSOTINCHI"] == DBNull.Value
+        //                            ? 0
+        //                            : Convert.ToInt32(reader["TONGSOTINCHI"]),
 
 
-            if (list.Count == 0)
-            {
-                return NotFound(new APIResponse<object>
-                {
-                    Message = $"Không tìm thấy học phí của sinh viên {maSv}.",
-                    Data = null
-                });
-            }
+        //                        TongHocPhi = reader["TONGHOCPHI"] == DBNull.Value
+        //                            ? 0
+        //                            : Convert.ToInt64(reader["TONGHOCPHI"])
+        //                    });
+        //                }
+        //            }
+        //        }
+        //    }
 
 
-            return Ok(new APIResponse<List<HocPhiModel>>
-            {
-                Message = "Lấy thông tin học phí thành công.",
-                Data = list
-            });
-        }
+        //    if (list.Count == 0)
+        //    {
+        //        return NotFound(new APIResponse<object>
+        //        {
+        //            Message = $"Không tìm thấy học phí của sinh viên {maSv}.",
+        //            Data = null
+        //        });
+        //    }
+
+
+        //    return Ok(new APIResponse<List<HocPhiModel>>
+        //    {
+        //        Message = "Lấy thông tin học phí thành công.",
+        //        Data = list
+        //    });
+        //}
     }
 }

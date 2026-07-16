@@ -182,7 +182,6 @@ namespace DoAnWebService.Controllers
             });
         }
 
-        [Authorize]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout(LogoutDTO model)
         {

@@ -14,34 +14,34 @@ namespace DoAnWebService.Controllers
 
     public class TuitionFeeController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
-        public TuitionFeeController(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
+        //private readonly IConfiguration _configuration;
+        //public TuitionFeeController(IConfiguration configuration)
+        //{
+        //    _configuration = configuration;
+        //}
 
-        [HttpGet("get-list")]
-        public async Task<IActionResult> List()
-        {
-            return Ok();
-        }
+        //[HttpGet("get-list")]
+        //public async Task<IActionResult> List()
+        //{
+        //    return Ok();
+        //}
 
-        [HttpGet("search")]
-        public async Task<IActionResult> Search(string? keyword)
-        {
-            return Ok();
-        }
+        //[HttpGet("search")]
+        //public async Task<IActionResult> Search(string? keyword)
+        //{
+        //    return Ok();
+        //}
 
-        [HttpPut("update/{masv}")]
-        public async Task<IActionResult> Update(string masv, UpdateTeacherModel model)
-        {
-            return Ok();
-        }
+        //[HttpPut("update/{masv}")]
+        //public async Task<IActionResult> Update(string masv, UpdateTeacherModel model)
+        //{
+        //    return Ok();
+        //}
 
-        [HttpPost("create")]
-        public async Task<IActionResult> Create(CreateLTCModel model)
-        {
-            return Ok();
-        }
+        //[HttpPost("create")]
+        //public async Task<IActionResult> Create(CreateLTCModel model)
+        //{
+        //    return Ok();
+        //}
     }
 }
